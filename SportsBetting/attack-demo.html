@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XSS Attack Demonstration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            flex: 1;
+            border: 2px solid #ccc;
+            padding: 15px;
+        }
+        .vulnerable {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        .safe {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        .transaction {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            background: white;
+        }
+        h2 { margin-top: 0; }
+        .warning {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .dangerous { background: #dc3545; color: white; }
+        .safe-btn { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🔐 XSS Attack Demonstration - Sports Betting API</h1>
+
+    <div class="info">
+        <strong>Setup:</strong> Malicious transactions have been stored in the database with XSS payloads.
+        Click the buttons below to see the difference between vulnerable and safe implementations.
+    </div>
+
+    <div class="warning">
+        ⚠️ <strong>WARNING:</strong> The "Vulnerable Version" will execute JavaScript from the database!
+        This demonstrates a real security risk if frontends don't properly sanitize data.
+    </div>
+
+    <div style="margin: 20px 0;">
+        <button class="dangerous" onclick="loadVulnerable()">
+            ❌ Load VULNERABLE Version (Will Execute Scripts!)
+        </button>
+        <button class="safe-btn" onclick="loadSafe()">
+            ✅ Load SAFE Version (No Script Execution)
+        </button>
+        <button onclick="clearResults()">Clear</button>
+    </div>
+
+    <div class="container">
+        <div class="panel vulnerable">
+            <h2>❌ Vulnerable Implementation</h2>
+            <p><code>innerHTML</code> - Scripts WILL execute</p>
+            <div id="vulnerable-results"></div>
+        </div>
+
+        <div class="panel safe">
+            <h2>✅ Safe Implementation</h2>
+            <p><code>textContent</code> - Scripts shown as text</p>
+            <div id="safe-results"></div>
+        </div>
+    </div>
+
+    <div class="info" style="margin-top: 20px;">
+        <h3>What You'll See:</h3>
+        <ul>
+            <li><strong>Vulnerable:</strong> Alert popups will appear (scripts executed!)</li>
+            <li><strong>Safe:</strong> Scripts shown as harmless text (HTML encoded)</li>
+        </ul>
+    </div>
+
+    <script>
+        async function loadVulnerable() {
+            const container = document.getElementById('vulnerable-results');
+            container.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch('http://localhost:5192/api/wallets/ca8eafd5-b5b7-4782-bba7-74a82927f9c1/transactions?pageSize=5');
+                const transactions = await response.json();
+
+                container.innerHTML = '';
+
+                transactions.forEach(tx => {
+                    const div = document.createElement('div');
+                    div.className = 'transaction';
+
+                    // ❌ VULNERABLE CODE - This executes any HTML/JavaScript in the description
+                    div.innerHTML = `
+                        <strong>${tx.type}</strong> - $${tx.amount}<br>
+                        Description: ${tx.description}<br>
+                        <small>Date: ${new Date(tx.createdAt).toLocaleString()}</small>
+                    `;
+
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                container.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function loadSafe() {
+            const container = document.getElementById('safe-results');
+            container.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const response = await fetch('http://localhost:5192/api/wallets/ca8eafd5-b5b7-4782-bba7-74a82927f9c1/transactions?pageSize=5');
+                const transactions = await response.json();
+
+                container.innerHTML = '';
+
+                transactions.forEach(tx => {
+                    const div = document.createElement('div');
+                    div.className = 'transaction';
+
+                    // ✅ SAFE CODE - Build DOM safely without executing scripts
+                    const strong = document.createElement('strong');
+                    strong.textContent = tx.type;
+
+                    const amountText = document.createTextNode(` - $${tx.amount}`);
+                    const br1 = document.createElement('br');
+
+                    const descLabel = document.createTextNode('Description: ');
+                    const descText = document.createTextNode(tx.description || 'N/A');
+                    const br2 = document.createElement('br');
+
+                    const small = document.createElement('small');
+                    small.textContent = `Date: ${new Date(tx.createdAt).toLocaleString()}`;
+
+                    div.appendChild(strong);
+                    div.appendChild(amountText);
+                    div.appendChild(br1);
+                    div.appendChild(descLabel);
+                    div.appendChild(descText);
+                    div.appendChild(br2);
+                    div.appendChild(small);
+
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                container.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('vulnerable-results').innerHTML = '';
+            document.getElementById('safe-results').innerHTML = '';
+        }
+
+        // Show instructions on load
+        document.getElementById('vulnerable-results').innerHTML = '<p>Click "Load VULNERABLE Version" to see the attack</p>';
+        document.getElementById('safe-results').innerHTML = '<p>Click "Load SAFE Version" to see proper sanitization</p>';
+    </script>
+</body>
+</html>

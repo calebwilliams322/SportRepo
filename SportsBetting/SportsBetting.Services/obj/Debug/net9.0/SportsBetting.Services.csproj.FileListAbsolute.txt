@@ -1,0 +1,15 @@
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/bin/Debug/net9.0/SportsBetting.Services.deps.json
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/bin/Debug/net9.0/SportsBetting.Services.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/bin/Debug/net9.0/SportsBetting.Services.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/bin/Debug/net9.0/SportsBetting.Domain.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/bin/Debug/net9.0/SportsBetting.Domain.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.csproj.AssemblyReference.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.GeneratedMSBuildEditorConfig.editorconfig
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.AssemblyInfoInputs.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.AssemblyInfo.cs
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.csproj.CoreCompileInputs.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBe.C7D1E38E.Up2Date
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/refint/SportsBetting.Services.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/SportsBetting.Services.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/Debug/net9.0/ref/SportsBetting.Services.dll

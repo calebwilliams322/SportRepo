@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Betting Domain Model - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: 280px;
+            background: #2d3748;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            left: 0;
+            top: 0;
+        }
+
+        nav h3 {
+            margin-bottom: 15px;
+            color: #a0aec0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        nav a {
+            color: #e2e8f0;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        nav a:hover {
+            background: #4a5568;
+            color: white;
+            padding-left: 16px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .class-doc {
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .class-doc h3 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .class-doc .class-signature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .class-doc .description {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-style: italic;
+        }
+
+        .subsection {
+            margin-top: 25px;
+        }
+
+        .subsection h4 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        .member {
+            background: #fafafa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .member-signature {
+            font-family: 'Courier New', monospace;
+            color: #0066cc;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .member-description {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .member-params, .member-returns {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .param {
+            margin-bottom: 5px;
+            padding-left: 15px;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+            font-weight: bold;
+        }
+
+        .enum-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .enum-value {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+        }
+
+        .enum-value-name {
+            font-family: 'Courier New', monospace;
+            color: #0066cc;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .badge-property { background: #e3f2fd; color: #1976d2; }
+        .badge-method { background: #f3e5f5; color: #7b1fa2; }
+        .badge-readonly { background: #fff3e0; color: #f57c00; }
+        .badge-static { background: #e8f5e9; color: #388e3c; }
+
+        .type {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        .toc {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            margin-top: 40px;
+        }
+
+        nav::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        nav::-webkit-scrollbar-track {
+            background: #1a202c;
+        }
+
+        nav::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+
+        nav::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            nav {
+                width: 100%;
+                height: auto;
+                position: relative;
+                max-height: 300px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <nav>
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+            </ul>
+
+            <h3>Entities</h3>
+            <ul>
+                <li><a href="#sport">Sport</a></li>
+                <li><a href="#league">League</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#event">Event</a></li>
+                <li><a href="#market">Market</a></li>
+                <li><a href="#outcome">Outcome</a></li>
+                <li><a href="#betselection">BetSelection</a></li>
+                <li><a href="#bet">Bet</a></li>
+            </ul>
+
+            <h3>Value Objects</h3>
+            <ul>
+                <li><a href="#money">Money</a></li>
+                <li><a href="#odds">Odds</a></li>
+                <li><a href="#score">Score</a></li>
+            </ul>
+
+            <h3>Enumerations</h3>
+            <ul>
+                <li><a href="#enums">All Enums</a></li>
+            </ul>
+
+            <h3>Services</h3>
+            <ul>
+                <li><a href="#settlement">SettlementService</a></li>
+            </ul>
+
+            <h3>Exceptions</h3>
+            <ul>
+                <li><a href="#exceptions">All Exceptions</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content">
+            <header>
+                <h1>Sports Betting Domain Model</h1>
+                <p>Complete API Documentation - Pre-Game Betting Platform</p>
+                <p style="font-size: 0.9em; margin-top: 10px;">Version 1.0 | .NET 9.0 | Pure OOP Domain Model</p>
+            </header>
+
+            <div class="container">
+
+        <!-- OVERVIEW -->
+        <div id="overview" class="section">
+            <h2>Overview</h2>
+            <p style="margin-bottom: 15px;">
+                This domain model provides a complete object-oriented implementation of a sports betting platform.
+                It supports both traditional bookmaker and peer-to-peer exchange models with pre-game betting capabilities.
+            </p>
+
+            <div class="toc">
+                <h4>Architecture Highlights</h4>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Pure Domain Logic:</strong> No database, framework, or infrastructure dependencies</li>
+                    <li><strong>Rich Domain Model:</strong> Entities contain business logic, not just data</li>
+                    <li><strong>Type Safety:</strong> Value objects prevent invalid states (negative money, invalid odds)</li>
+                    <li><strong>Immutability:</strong> Locked odds, immutable value objects for thread safety</li>
+                    <li><strong>Settlement Engine:</strong> Complete bet grading with void/push handling</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 25px; color: #667eea;">Supported Features</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div style="background: #e8eaf6; padding: 15px; border-radius: 4px;">
+                    <strong>Market Types</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Moneyline</li>
+                        <li>Point Spread</li>
+                        <li>Totals (Over/Under)</li>
+                        <li>Props & Futures (structure ready)</li>
+                    </ul>
+                </div>
+                <div style="background: #f3e5f5; padding: 15px; border-radius: 4px;">
+                    <strong>Bet Types</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Single Bets</li>
+                        <li>Parlays (2+ legs)</li>
+                        <li>System Bets (structure ready)</li>
+                        <li>Round Robin (structure ready)</li>
+                    </ul>
+                </div>
+                <div style="background: #e0f2f1; padding: 15px; border-radius: 4px;">
+                    <strong>Settlement</strong>
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Automatic outcome grading</li>
+                        <li>Void leg handling</li>
+                        <li>Push scenarios</li>
+                        <li>Event cancellation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENTITIES SECTION -->
+        <div id="entities" class="section">
+            <h2>Entities</h2>
+            <p style="margin-bottom: 20px;">
+                Core domain entities representing the business objects in the betting system.
+                Entities have unique identities and contain business logic.
+            </p>
+
+            <!-- SPORT -->
+            <div id="sport" class="class-doc">
+                <h3>Sport</h3>
+                <div class="class-signature">public class Sport</div>
+                <div class="description">
+                    Represents a sport or discipline (e.g., Football, Basketball, Tennis).
+                    Acts as the top-level organizational container for leagues.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public Guid Id { get; }
+                            <span class="badge badge-readonly">read-only</span>
+                        </div>
+                        <div class="member-description">Unique identifier for the sport</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public string Name { get; }
+                            <span class="badge badge-readonly">read-only</span>
+                        </div>
+                        <div class="member-description">Name of the sport (e.g., "American Football", "Basketball")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public string Code { get; }
+                            <span class="badge badge-readonly">read-only</span>
+                        </div>
+                        <div class="member-description">Short code for the sport (e.g., "NFL", "NBA")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public IReadOnlyList&lt;League&gt; Leagues { get; }
+                            <span class="badge badge-readonly">read-only</span>
+                        </div>
+                        <div class="member-description">Collection of leagues within this sport</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public Sport(string name, string code)
+                            <span class="badge badge-method">constructor</span>
+                        </div>
+                        <div class="member-description">Creates a new sport with the specified name and code</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param">
+                                <span class="param-name">name</span>: <span class="type">string</span> - Name of the sport
+                            </div>
+                            <div class="param">
+                                <span class="param-name">code</span>: <span class="type">string</span> - Short code for the sport
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public void AddLeague(League league)
+                            <span class="badge badge-method">method</span>
+                        </div>
+                        <div class="member-description">Adds a league to this sport</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param">
+                                <span class="param-name">league</span>: <span class="type">League</span> - The league to add
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEAGUE -->
+            <div id="league" class="class-doc">
+                <h3>League</h3>
+                <div class="class-signature">public class League</div>
+                <div class="description">
+                    Represents a league or tournament (e.g., NFL, Premier League, NBA).
+                    Contains teams and is associated with a specific sport.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                        <div class="member-description">Unique identifier for the league</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Name { get; }</div>
+                        <div class="member-description">Name of the league</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Code { get; }</div>
+                        <div class="member-description">Short code for the league</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid SportId { get; }</div>
+                        <div class="member-description">Reference to the parent sport</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public IReadOnlyList&lt;Team&gt; Teams { get; }</div>
+                        <div class="member-description">Collection of teams in this league</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public League(string name, string code, Guid sportId)</div>
+                        <div class="member-description">Creates a new league</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">name</span>: <span class="type">string</span> - League name</div>
+                            <div class="param"><span class="param-name">code</span>: <span class="type">string</span> - League code</div>
+                            <div class="param"><span class="param-name">sportId</span>: <span class="type">Guid</span> - Parent sport ID</div>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void AddTeam(Team team)</div>
+                        <div class="member-description">Adds a team to this league</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM -->
+            <div id="team" class="class-doc">
+                <h3>Team</h3>
+                <div class="class-signature">public class Team</div>
+                <div class="description">
+                    Represents a team or individual participant in a sport.
+                    Can represent both team sports participants (e.g., Lakers) and individual athletes.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                        <div class="member-description">Unique identifier</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Name { get; }</div>
+                        <div class="member-description">Team name (e.g., "Lakers", "Chiefs")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Code { get; }</div>
+                        <div class="member-description">Short code (e.g., "LAL", "KC")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string? City { get; }</div>
+                        <div class="member-description">City name (optional, e.g., "Los Angeles")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid LeagueId { get; }</div>
+                        <div class="member-description">Reference to the parent league</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string FullName { get; }</div>
+                        <div class="member-description">Combined city and team name (e.g., "Los Angeles Lakers")</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Team(string name, string code, Guid leagueId, string? city = null)</div>
+                        <div class="member-description">Creates a new team</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EVENT -->
+            <div id="event" class="class-doc">
+                <h3>Event</h3>
+                <div class="class-signature">public class Event</div>
+                <div class="description">
+                    Represents a sporting event or match on which bets are offered.
+                    Contains markets, manages event lifecycle, and tracks final results.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                        <div class="member-description">Unique identifier for the event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid LeagueId { get; }</div>
+                        <div class="member-description">Reference to the league</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Name { get; }</div>
+                        <div class="member-description">Event name (e.g., "Lakers vs Celtics - Game 1")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Team HomeTeam { get; }</div>
+                        <div class="member-description">Home team/participant</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Team AwayTeam { get; }</div>
+                        <div class="member-description">Away team/participant</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public DateTime ScheduledStartTime { get; }</div>
+                        <div class="member-description">Scheduled start date and time</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string? Venue { get; }</div>
+                        <div class="member-description">Venue/location (optional)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public EventStatus Status { get; private set; }</div>
+                        <div class="member-description">Current status (Scheduled, InProgress, Completed, etc.)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Score? FinalScore { get; private set; }</div>
+                        <div class="member-description">Final score (null until event is completed)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public IReadOnlyList&lt;Market&gt; Markets { get; }</div>
+                        <div class="member-description">Collection of betting markets for this event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool HasStarted { get; }</div>
+                        <div class="member-description">Whether the event has started</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsBettingAllowed { get; }</div>
+                        <div class="member-description">Whether betting is currently allowed</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public Event(string name, Team homeTeam, Team awayTeam, DateTime scheduledStartTime, Guid leagueId, string? venue = null)
+                        </div>
+                        <div class="member-description">Creates a new event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void AddMarket(Market market)</div>
+                        <div class="member-description">Adds a betting market to this event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Start()</div>
+                        <div class="member-description">Transitions event to InProgress status</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Complete(Score finalScore)</div>
+                        <div class="member-description">Completes the event with the final score. Closes all markets.</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Cancel()</div>
+                        <div class="member-description">Cancels the event. Closes all markets.</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Suspend()</div>
+                        <div class="member-description">Suspends the event temporarily. Suspends all markets.</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Resume()</div>
+                        <div class="member-description">Resumes a suspended event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Market? GetMarket(Guid marketId)</div>
+                        <div class="member-description">Gets a market by ID</div>
+                        <div class="member-returns">
+                            <strong>Returns:</strong> <span class="type">Market?</span> - The market or null if not found
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public IEnumerable&lt;Market&gt; GetMarketsByType(MarketType type)</div>
+                        <div class="member-description">Gets all markets of a specific type</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARKET -->
+            <div id="market" class="class-doc">
+                <h3>Market</h3>
+                <div class="class-signature">public class Market</div>
+                <div class="description">
+                    Represents a betting market within an event (e.g., Moneyline, Spread, Totals).
+                    Contains outcomes and manages market state (open/closed/settled).
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                        <div class="member-description">Unique identifier</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid EventId { get; private set; }</div>
+                        <div class="member-description">Reference to the parent event</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public MarketType Type { get; }</div>
+                        <div class="member-description">Type of market (Moneyline, Spread, Totals, etc.)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Name { get; }</div>
+                        <div class="member-description">Market name (e.g., "Match Winner", "Point Spread")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string? Description { get; }</div>
+                        <div class="member-description">Optional market description</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public IReadOnlyList&lt;Outcome&gt; Outcomes { get; }</div>
+                        <div class="member-description">Collection of possible outcomes</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsOpen { get; private set; }</div>
+                        <div class="member-description">Whether the market is open for betting</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsSettled { get; private set; }</div>
+                        <div class="member-description">Whether the market has been settled</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Market(MarketType type, string name, string? description = null)</div>
+                        <div class="member-description">Creates a new market</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void AddOutcome(Outcome outcome)</div>
+                        <div class="member-description">Adds an outcome to this market</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Close()</div>
+                        <div class="member-description">Closes the market (no more bets accepted)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Suspend()</div>
+                        <div class="member-description">Suspends the market temporarily</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Reopen()</div>
+                        <div class="member-description">Reopens a closed market (cannot reopen settled markets)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Settle(params Guid[] winningOutcomeIds)</div>
+                        <div class="member-description">Settles the market by marking winning outcomes</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param">
+                                <span class="param-name">winningOutcomeIds</span>: <span class="type">Guid[]</span> - IDs of winning outcomes
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleAsVoid()</div>
+                        <div class="member-description">Settles the market as void (all outcomes voided)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void VoidOutcomes(params Guid[] outcomeIds)</div>
+                        <div class="member-description">Voids specific outcomes in the market</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Outcome? GetOutcome(Guid outcomeId)</div>
+                        <div class="member-description">Gets an outcome by ID</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUTCOME -->
+            <div id="outcome" class="class-doc">
+                <h3>Outcome</h3>
+                <div class="class-signature">public class Outcome</div>
+                <div class="description">
+                    Represents a specific outcome within a betting market
+                    (e.g., "Team A wins", "Over 210.5", "Team B -5.5").
+                    Contains odds and line values.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                        <div class="member-description">Unique identifier</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid MarketId { get; private set; }</div>
+                        <div class="member-description">Reference to the parent market</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Name { get; }</div>
+                        <div class="member-description">Outcome name (e.g., "Lakers Win", "Over 210.5")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Description { get; }</div>
+                        <div class="member-description">Outcome description</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Odds CurrentOdds { get; private set; }</div>
+                        <div class="member-description">Current odds for this outcome (in bookmaker model)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public decimal? Line { get; }</div>
+                        <div class="member-description">Line value for spread/totals (e.g., -6.5, 210.5)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool? IsWinner { get; private set; }</div>
+                        <div class="member-description">Whether this outcome won (null until settled)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsVoid { get; private set; }</div>
+                        <div class="member-description">Whether this outcome was voided</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Outcome(string name, string description, Odds initialOdds, decimal? line = null)</div>
+                        <div class="member-description">Creates a new outcome</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void UpdateOdds(Odds newOdds)</div>
+                        <div class="member-description">Updates the current odds (for bookmaker model)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BET SELECTION -->
+            <div id="betselection" class="class-doc">
+                <h3>BetSelection</h3>
+                <div class="class-signature">public class BetSelection</div>
+                <div class="description">
+                    Represents a specific selection within a bet.
+                    Captures Event + Market + Outcome + Locked Odds at the time of bet placement.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid BetId { get; private set; }</div>
+                        <div class="member-description">Reference to the parent bet</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid EventId { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string EventName { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid MarketId { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public MarketType MarketType { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string MarketName { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid OutcomeId { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string OutcomeName { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Odds LockedOdds { get; }</div>
+                        <div class="member-description">The odds locked in at bet placement time</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public decimal? Line { get; }</div>
+                        <div class="member-description">Line value if applicable</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public SelectionResult Result { get; private set; }</div>
+                        <div class="member-description">Result after settlement (Pending, Won, Lost, Pushed, Void)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsWin { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsLoss { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsPush { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsVoid { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsPending { get; }</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public BetSelection(Event evt, Market market, Outcome outcome)</div>
+                        <div class="member-description">Creates a new bet selection, locking in the current odds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BET -->
+            <div id="bet" class="class-doc">
+                <h3>Bet</h3>
+                <div class="class-signature">public class Bet</div>
+                <div class="description">
+                    Represents a betting ticket/slip placed by a user.
+                    Can contain single or multiple selections (parlay).
+                    Handles settlement logic including void/push scenarios.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Guid Id { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string TicketNumber { get; }</div>
+                        <div class="member-description">Unique ticket number (e.g., "BET202511141730268845")</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public BetType Type { get; }</div>
+                        <div class="member-description">Type of bet (Single, Parlay, System, RoundRobin)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public IReadOnlyList&lt;BetSelection&gt; Selections { get; }</div>
+                        <div class="member-description">Collection of selections in this bet</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money Stake { get; }</div>
+                        <div class="member-description">Amount wagered</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public BetStatus Status { get; private set; }</div>
+                        <div class="member-description">Current bet status</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public DateTime PlacedAt { get; }</div>
+                        <div class="member-description">When the bet was placed</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public DateTime? SettledAt { get; private set; }</div>
+                        <div class="member-description">When the bet was settled (null until settled)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money PotentialPayout { get; }</div>
+                        <div class="member-description">Total payout if bet wins (including stake)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money? ActualPayout { get; private set; }</div>
+                        <div class="member-description">Actual payout after settlement (null until settled)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Odds CombinedOdds { get; }</div>
+                        <div class="member-description">
+                            Combined odds for the bet<br>
+                            Single: selection's odds<br>
+                            Parlay: product of all selection odds
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money PotentialProfit { get; }</div>
+                        <div class="member-description">Potential profit (payout - stake)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money? ActualProfit { get; }</div>
+                        <div class="member-description">Actual profit after settlement</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsPending { get; }</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsSettled { get; }</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public static Bet CreateSingle(Money stake, Event evt, Market market, Outcome outcome)
+                            <span class="badge badge-static">static</span>
+                        </div>
+                        <div class="member-description">Creates a single bet</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">stake</span>: <span class="type">Money</span> - Amount to wager</div>
+                            <div class="param"><span class="param-name">evt</span>: <span class="type">Event</span> - The event</div>
+                            <div class="param"><span class="param-name">market</span>: <span class="type">Market</span> - The market</div>
+                            <div class="param"><span class="param-name">outcome</span>: <span class="type">Outcome</span> - The outcome to bet on</div>
+                        </div>
+                        <div class="member-returns">
+                            <strong>Returns:</strong> <span class="type">Bet</span> - A new single bet
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public static Bet CreateParlay(Money stake, params (Event evt, Market market, Outcome outcome)[] selections)
+                            <span class="badge badge-static">static</span>
+                        </div>
+                        <div class="member-description">Creates a parlay bet with multiple selections</div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">stake</span>: <span class="type">Money</span> - Amount to wager</div>
+                            <div class="param">
+                                <span class="param-name">selections</span>: <span class="type">(Event, Market, Outcome)[]</span> -
+                                Array of selections (minimum 2)
+                            </div>
+                        </div>
+                        <div class="member-returns">
+                            <strong>Returns:</strong> <span class="type">Bet</span> - A new parlay bet
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Settle()</div>
+                        <div class="member-description">
+                            Settles the bet based on selection outcomes.
+                            For parlays, handles void legs by recalculating odds.
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void Void()</div>
+                        <div class="member-description">
+                            Manually voids the bet (e.g., if event is cancelled).
+                            Returns stake to user.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Settlement Logic</h4>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <strong>Single Bet:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Win → Pay full payout</li>
+                            <li>Loss → Stake lost</li>
+                            <li>Push/Void → Return stake</li>
+                        </ul>
+                        <br>
+                        <strong>Parlay:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>All win → Pay full payout</li>
+                            <li>Any loss → Bet loses</li>
+                            <li>Void leg(s) → Recalculate odds without void legs</li>
+                            <li>All void → Return stake</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALUE OBJECTS SECTION -->
+        <div id="value-objects" class="section">
+            <h2>Value Objects</h2>
+            <p style="margin-bottom: 20px;">
+                Immutable value objects that represent concepts without unique identity.
+                Implemented as structs for performance. Equality is based on value, not reference.
+            </p>
+
+            <!-- MONEY -->
+            <div id="money" class="class-doc">
+                <h3>Money</h3>
+                <div class="class-signature">public readonly struct Money : IEquatable&lt;Money&gt;</div>
+                <div class="description">
+                    Type-safe representation of monetary values with currency.
+                    Prevents negative amounts and enforces currency matching in operations.
+                    Immutable for thread safety.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public decimal Amount { get; }</div>
+                        <div class="member-description">The monetary amount (always non-negative)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public string Currency { get; }</div>
+                        <div class="member-description">Currency code (e.g., "USD", "EUR")</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Money(decimal amount, string currency = "USD")</div>
+                        <div class="member-description">
+                            Creates a new Money instance.
+                            Throws ArgumentException if amount is negative or currency is invalid.
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public static Money Zero(string currency = "USD")
+                            <span class="badge badge-static">static</span>
+                        </div>
+                        <div class="member-description">Creates a zero-amount Money instance</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Operators</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public static Money operator +(Money a, Money b)</div>
+                        <div class="member-description">Adds two Money values (must be same currency)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public static Money operator -(Money a, Money b)</div>
+                        <div class="member-description">Subtracts Money values (must be same currency)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public static Money operator *(Money money, decimal multiplier)</div>
+                        <div class="member-description">Multiplies Money by a decimal multiplier</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public static bool operator &gt;(Money a, Money b)</div>
+                        <div class="member-description">Greater than comparison (same currency required)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public static bool operator &lt;(Money a, Money b)</div>
+                        <div class="member-description">Less than comparison (same currency required)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public static bool operator ==(Money a, Money b)</div>
+                        <div class="member-description">Equality comparison (amount and currency must match)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ODDS -->
+            <div id="odds" class="class-doc">
+                <h3>Odds</h3>
+                <div class="class-signature">public readonly struct Odds : IEquatable&lt;Odds&gt;</div>
+                <div class="description">
+                    Represents betting odds with payout calculation capabilities.
+                    Stores odds in decimal format internally (e.g., 2.5 = $2.50 returned per $1 wagered).
+                    Provides conversion to/from American odds format.
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public decimal DecimalValue { get; }</div>
+                        <div class="member-description">
+                            Decimal odds value (minimum 1.0)<br>
+                            Examples: 2.5 = $250 payout on $100 stake (including stake)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Odds(decimal decimalOdds)</div>
+                        <div class="member-description">
+                            Creates odds from decimal value.
+                            Throws ArgumentException if less than 1.0.
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">
+                            public static Odds FromAmerican(int americanOdds)
+                            <span class="badge badge-static">static</span>
+                        </div>
+                        <div class="member-description">
+                            Creates odds from American format<br>
+                            Positive (e.g., +200) → (200/100) + 1 = 3.0<br>
+                            Negative (e.g., -150) → (100/150) + 1 = 1.67
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public int ToAmerican()</div>
+                        <div class="member-description">
+                            Converts to American odds format<br>
+                            Decimal ≥ 2.0 → Positive American<br>
+                            Decimal &lt; 2.0 → Negative American
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money CalculatePayout(Money stake)</div>
+                        <div class="member-description">
+                            Calculates total payout including stake<br>
+                            Formula: stake × decimalOdds
+                        </div>
+                        <div class="member-returns">
+                            <strong>Returns:</strong> Total payout (profit + stake)
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public Money CalculateProfit(Money stake)</div>
+                        <div class="member-description">
+                            Calculates profit only (excluding stake)<br>
+                            Formula: stake × (decimalOdds - 1)
+                        </div>
+                        <div class="member-returns">
+                            <strong>Returns:</strong> Profit only
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Operators</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public static Odds operator *(Odds a, Odds b)</div>
+                        <div class="member-description">
+                            Multiplies odds together (for parlays)<br>
+                            Example: 1.80 × 1.65 = 2.97
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCORE -->
+            <div id="score" class="class-doc">
+                <h3>Score</h3>
+                <div class="class-signature">public readonly struct Score : IEquatable&lt;Score&gt;</div>
+                <div class="description">
+                    Represents the score of a sporting event.
+                    Provides helper properties for common queries (winner, margin, total).
+                </div>
+
+                <div class="subsection">
+                    <h4>Properties</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public int HomeScore { get; }</div>
+                        <div class="member-description">Home team/participant score (non-negative)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public int AwayScore { get; }</div>
+                        <div class="member-description">Away team/participant score (non-negative)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public int TotalPoints { get; }</div>
+                        <div class="member-description">Combined score (HomeScore + AwayScore)</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public int Margin { get; }</div>
+                        <div class="member-description">Absolute point difference</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsHomeWin { get; }</div>
+                        <div class="member-description">True if home team won</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsAwayWin { get; }</div>
+                        <div class="member-description">True if away team won</div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public bool IsDraw { get; }</div>
+                        <div class="member-description">True if scores are equal</div>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public Score(int homeScore, int awayScore)</div>
+                        <div class="member-description">
+                            Creates a new score.
+                            Throws ArgumentException if either score is negative.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENUMS SECTION -->
+        <div id="enums" class="section">
+            <h2>Enumerations</h2>
+            <p style="margin-bottom: 20px;">
+                Enumerations representing fixed sets of named constants used throughout the domain model.
+            </p>
+
+            <div class="class-doc">
+                <h3>EventStatus</h3>
+                <div class="class-signature">public enum EventStatus</div>
+                <div class="description">Represents the current state of a sporting event</div>
+
+                <div class="enum-values">
+                    <div class="enum-value">
+                        <div class="enum-value-name">Scheduled</div>
+                        <div>Event is scheduled but hasn't started yet</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">InProgress</div>
+                        <div>Event is currently in progress (in-play)</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Completed</div>
+                        <div>Event has finished and results are final</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Cancelled</div>
+                        <div>Event has been cancelled</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Suspended</div>
+                        <div>Event is temporarily suspended</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>BetStatus</h3>
+                <div class="class-signature">public enum BetStatus</div>
+                <div class="description">Represents the current state of a bet</div>
+
+                <div class="enum-values">
+                    <div class="enum-value">
+                        <div class="enum-value-name">Pending</div>
+                        <div>Bet placed and waiting for event to complete</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">PendingAcceptance</div>
+                        <div>Bet acceptance pending (e.g., odds verification)</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Won</div>
+                        <div>Bet settled as a win</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Lost</div>
+                        <div>Bet settled as a loss</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Pushed</div>
+                        <div>Bet resulted in a push (tie) - stake returned</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Void</div>
+                        <div>Bet was cancelled or voided - stake returned</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>MarketType</h3>
+                <div class="class-signature">public enum MarketType</div>
+                <div class="description">Types of betting markets available</div>
+
+                <div class="enum-values">
+                    <div class="enum-value">
+                        <div class="enum-value-name">Moneyline</div>
+                        <div>Straight bet on which team/participant wins</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Spread</div>
+                        <div>Bet on team to cover a point spread/handicap</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Totals</div>
+                        <div>Bet on total combined score over/under a line</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Prop</div>
+                        <div>Proposition bet (player props, game props)</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Futures</div>
+                        <div>Future bet (championship winner, season totals)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>BetType</h3>
+                <div class="class-signature">public enum BetType</div>
+                <div class="description">Types of bets that can be placed</div>
+
+                <div class="enum-values">
+                    <div class="enum-value">
+                        <div class="enum-value-name">Single</div>
+                        <div>Single selection bet</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Parlay</div>
+                        <div>Multiple selections, all must win (accumulator)</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">System</div>
+                        <div>System bet with multiple combinations</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">RoundRobin</div>
+                        <div>Round robin bet (all combinations of parlays)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>SelectionResult</h3>
+                <div class="class-signature">public enum SelectionResult</div>
+                <div class="description">Result of an individual bet selection after settlement</div>
+
+                <div class="enum-values">
+                    <div class="enum-value">
+                        <div class="enum-value-name">Pending</div>
+                        <div>Selection has not been settled yet</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Won</div>
+                        <div>Selection won</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Lost</div>
+                        <div>Selection lost</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Pushed</div>
+                        <div>Selection pushed (tie on the line)</div>
+                    </div>
+                    <div class="enum-value">
+                        <div class="enum-value-name">Void</div>
+                        <div>Selection was voided</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICES SECTION -->
+        <div id="services" class="section">
+            <h2>Services</h2>
+            <p style="margin-bottom: 20px;">
+                Domain services that orchestrate business logic across multiple entities.
+                Services contain operations that don't naturally belong to a single entity.
+            </p>
+
+            <div id="settlement" class="class-doc">
+                <h3>SettlementService</h3>
+                <div class="class-signature">public class SettlementService</div>
+                <div class="description">
+                    Service for settling bets based on event outcomes.
+                    Handles different market types (Moneyline, Spread, Totals) and
+                    orchestrates the settlement of individual selections and complete bets.
+                </div>
+
+                <div class="subsection">
+                    <h4>Methods</h4>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleMoneylineMarket(Market market, Event evt)</div>
+                        <div class="member-description">
+                            Settles a moneyline market based on final score.
+                            Determines winner based on which team scored more points.
+                        </div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">market</span>: <span class="type">Market</span> - The moneyline market (must be MarketType.Moneyline)</div>
+                            <div class="param"><span class="param-name">evt</span>: <span class="type">Event</span> - The event with final score</div>
+                        </div>
+                        <div class="member-params">
+                            <strong>Behavior:</strong>
+                            <ul style="margin-left: 15px; margin-top: 5px;">
+                                <li>If draw and no draw outcome exists: voids both outcomes (push)</li>
+                                <li>Otherwise marks the winning team's outcome</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleSpreadMarket(Market market, Event evt)</div>
+                        <div class="member-description">
+                            Settles a point spread market based on final score.
+                            Applies the spread to determine which outcome covers.
+                        </div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">market</span>: <span class="type">Market</span> - The spread market (must be MarketType.Spread)</div>
+                            <div class="param"><span class="param-name">evt</span>: <span class="type">Event</span> - The event with final score</div>
+                        </div>
+                        <div class="member-params">
+                            <strong>Behavior:</strong>
+                            <ul style="margin-left: 15px; margin-top: 5px;">
+                                <li>Applies line to home score: adjustedScore = homeScore + line</li>
+                                <li>If adjusted score = away score: Push (void both outcomes)</li>
+                                <li>Otherwise marks the covering outcome</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleTotalsMarket(Market market, Event evt)</div>
+                        <div class="member-description">
+                            Settles a totals (over/under) market based on final score.
+                            Compares combined score to the line.
+                        </div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">market</span>: <span class="type">Market</span> - The totals market (must be MarketType.Totals)</div>
+                            <div class="param"><span class="param-name">evt</span>: <span class="type">Event</span> - The event with final score</div>
+                        </div>
+                        <div class="member-params">
+                            <strong>Behavior:</strong>
+                            <ul style="margin-left: 15px; margin-top: 5px;">
+                                <li>Calculates total points = homeScore + awayScore</li>
+                                <li>If total = line: Push (void both outcomes)</li>
+                                <li>If total &gt; line: Over wins</li>
+                                <li>If total &lt; line: Under wins</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleEvent(Event evt)</div>
+                        <div class="member-description">
+                            Settles all markets for an event.
+                            Automatically determines market type and applies appropriate settlement logic.
+                        </div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">evt</span>: <span class="type">Event</span> - The completed event</div>
+                        </div>
+                    </div>
+
+                    <div class="member">
+                        <div class="member-signature">public void SettleBet(Bet bet, IEnumerable&lt;Event&gt; events)</div>
+                        <div class="member-description">
+                            Settles a bet based on its selections and current market states.
+                            First settles all individual selections, then settles the bet with
+                            appropriate parlay logic (void handling, recalculation).
+                        </div>
+                        <div class="member-params">
+                            <strong>Parameters:</strong>
+                            <div class="param"><span class="param-name">bet</span>: <span class="type">Bet</span> - The bet to settle</div>
+                            <div class="param"><span class="param-name">events</span>: <span class="type">IEnumerable&lt;Event&gt;</span> - Collection of events referenced by bet selections</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXCEPTIONS SECTION -->
+        <div id="exceptions" class="section">
+            <h2>Exceptions</h2>
+            <p style="margin-bottom: 20px;">
+                Domain-specific exceptions for handling business rule violations and error conditions.
+            </p>
+
+            <div class="class-doc">
+                <h3>BettingException</h3>
+                <div class="class-signature">public class BettingException : Exception</div>
+                <div class="description">Base exception for all betting-related errors</div>
+            </div>
+
+            <div class="class-doc">
+                <h3>MarketClosedException</h3>
+                <div class="class-signature">public class MarketClosedException : BettingException</div>
+                <div class="description">
+                    Thrown when attempting to place a bet on a closed or invalid market
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>InvalidEventStateException</h3>
+                <div class="class-signature">public class InvalidEventStateException : BettingException</div>
+                <div class="description">
+                    Thrown when attempting invalid operations on an event
+                    (e.g., starting a completed event, completing a cancelled event)
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>InvalidBetException</h3>
+                <div class="class-signature">public class InvalidBetException : BettingException</div>
+                <div class="description">
+                    Thrown when bet validation fails
+                    (e.g., parlay with fewer than 2 selections)
+                </div>
+            </div>
+
+            <div class="class-doc">
+                <h3>SettlementException</h3>
+                <div class="class-signature">public class SettlementException : BettingException</div>
+                <div class="description">
+                    Thrown when settlement fails
+                    (e.g., settling a bet with unsettled markets, settling already-settled market)
+                </div>
+            </div>
+        </div>
+
+                <footer>
+                    <p>&copy; 2025 Sports Betting Domain Model | Generated from SportsBetting.Domain v1.0</p>
+                    <p style="margin-top: 5px; font-size: 0.9em;">
+                        Pure C# OOP Implementation | .NET 9.0 | No Database Dependencies
+                    </p>
+                </footer>
+            </div> <!-- end container -->
+        </div> <!-- end main-content -->
+    </div> <!-- end layout -->
+</body>
+</html>

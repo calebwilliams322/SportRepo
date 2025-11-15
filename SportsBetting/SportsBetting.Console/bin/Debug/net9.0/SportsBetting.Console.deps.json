@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "SportsBetting.Console/1.0.0": {
+        "dependencies": {
+          "SportsBetting.Domain": "1.0.0"
+        },
+        "runtime": {
+          "SportsBetting.Console.dll": {}
+        }
+      },
+      "SportsBetting.Domain/1.0.0": {
+        "runtime": {
+          "SportsBetting.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SportsBetting.Console/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SportsBetting.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,17 @@
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.csproj.AssemblyReference.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.GeneratedMSBuildEditorConfig.editorconfig
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.AssemblyInfoInputs.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.AssemblyInfo.cs
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.csproj.CoreCompileInputs.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Data.deps.json
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Data.runtimeconfig.json
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Data.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Data.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Domain.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/bin/Debug/net9.0/SportsBetting.Domain.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBe.449B88DC.Up2Date
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/refint/SportsBetting.Data.dll
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.pdb
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/SportsBetting.Data.genruntimeconfig.cache
+/Users/calebwilliams/SportsBetting/SportsBetting.Data/obj/Debug/net9.0/ref/SportsBetting.Data.dll
