@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {}
+    "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {}
   },
   "projects": {
-    "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+    "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
         "projectName": "SportsBetting.Domain",
-        "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
         "packagesPath": "/Users/calebwilliams/.nuget/packages/",
-        "outputPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/obj/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
@@ -43,6 +43,12 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

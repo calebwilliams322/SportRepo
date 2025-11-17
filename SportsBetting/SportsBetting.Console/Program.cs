@@ -1,3 +1,4 @@
+using SportsBetting.Domain.Configuration;
 using SportsBetting.Domain.Entities;
 using SportsBetting.Domain.Enums;
 using SportsBetting.Domain.Services;
@@ -69,10 +70,21 @@ class Program
         System.Console.WriteLine("\n=== Demo Complete ===");
     }
 
+    /// <summary>
+    /// Helper method to create a test user for demos
+    /// </summary>
+    static User CreateTestUser(string username = "testuser", string email = "test@example.com")
+    {
+        return User.CreateWithPassword(username, email, "Test123456!", "USD");
+    }
+
     static void DemoSingleBet()
     {
         System.Console.WriteLine("SCENARIO 1: Single Moneyline Bet");
         System.Console.WriteLine("--------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         // Create sport, league, teams
         var football = new Sport("American Football", "NFL");
@@ -113,7 +125,7 @@ class Program
         var stake = new Money(100m, "USD");
         var chiefsOutcome = moneyline.Outcomes.First(o => o.Name.Contains("Chiefs"));
 
-        var bet = Bet.CreateSingle(stake, game, moneyline, chiefsOutcome);
+        var bet = Bet.CreateSingle(user, stake, game, moneyline, chiefsOutcome);
 
         System.Console.WriteLine($"\n✓ Bet Placed: {bet.TicketNumber}");
         System.Console.WriteLine($"  Selection: {bet.Selections[0]}");
@@ -129,7 +141,8 @@ class Program
         System.Console.WriteLine($"Final Score: {game.HomeTeam.Name} {finalScore.HomeScore} - {finalScore.AwayScore} {game.AwayTeam.Name}");
 
         // Settle the market
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
         settlementService.SettleMoneylineMarket(moneyline, game);
 
         System.Console.WriteLine($"Market settled: {moneyline.Name}");
@@ -146,6 +159,9 @@ class Program
     {
         System.Console.WriteLine("SCENARIO 2: 3-Leg Parlay Bet (All Win)");
         System.Console.WriteLine("---------------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         // Setup
         var basketball = new Sport("Basketball", "NBA");
@@ -188,6 +204,7 @@ class Program
         // Place parlay bet
         var stake = new Money(50m, "USD");
         var parlay = Bet.CreateParlay(
+            user,
             stake,
             (game1, ml1, ml1.Outcomes.First(o => o.Name.Contains("Lakers"))),
             (game2, ml2, ml2.Outcomes.First(o => o.Name.Contains("Warriors"))),
@@ -216,7 +233,8 @@ class Program
         System.Console.WriteLine($"  {game3.Name}: {game3.FinalScore}");
 
         // Settle markets
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
         settlementService.SettleMoneylineMarket(ml1, game1);
         settlementService.SettleMoneylineMarket(ml2, game2);
         settlementService.SettleMoneylineMarket(ml3, game3);
@@ -233,6 +251,9 @@ class Program
     {
         System.Console.WriteLine("SCENARIO 3: Parlay with One Void Leg");
         System.Console.WriteLine("-------------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         // Setup (simplified)
         var baseball = new Sport("Baseball", "MLB");
@@ -258,7 +279,8 @@ class Program
 
         // Place parlay
         var parlay = Bet.CreateParlay(
-            new Money(100m),
+            user,
+            new Money(100m, "USD"),
             (game1, ml1, ml1.Outcomes.First(o => o.Name.Contains("Yankees"))),
             (game2, ml2, ml2.Outcomes.First(o => o.Name.Contains("Dodgers")))
         );
@@ -277,7 +299,8 @@ class Program
         System.Console.WriteLine($"  Game 2: CANCELLED (PPD - Rain)");
 
         // Settle
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
         settlementService.SettleMoneylineMarket(ml1, game1);
 
         // Manually void the second market since the game was cancelled
@@ -296,6 +319,9 @@ class Program
     {
         System.Console.WriteLine("SCENARIO 4: Spread and Totals Bets");
         System.Console.WriteLine("-----------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         var football = new Sport("American Football", "NFL");
         var nfl = new League("NFL", "NFL", football.Id);
@@ -328,14 +354,16 @@ class Program
 
         // Place bets
         var spreadBet = Bet.CreateSingle(
-            new Money(100m),
+            user,
+            new Money(100m, "USD"),
             game,
             spread,
             spread.Outcomes.First(o => o.Name.Contains("Packers"))
         );
 
         var totalsBet = Bet.CreateSingle(
-            new Money(100m),
+            user,
+            new Money(100m, "USD"),
             game,
             totals,
             totals.Outcomes.First(o => o.Name.Contains("Over"))
@@ -352,7 +380,8 @@ class Program
         System.Console.WriteLine($"Final Score: Packers 31 - 24 Bears (Total: {finalScore.TotalPoints})");
 
         // Settle
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
         settlementService.SettleSpreadMarket(spread, game);
         settlementService.SettleTotalsMarket(totals, game);
 
@@ -373,6 +402,9 @@ class Program
     {
         System.Console.WriteLine("SCENARIO 5: LineLock - Locking Odds Before They Move");
         System.Console.WriteLine("----------------------------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         var football = new Sport("American Football", "NFL");
         var nfl = new League("NFL", "NFL", football.Id);
@@ -408,6 +440,7 @@ class Program
         var expirationTime = DateTime.UtcNow.AddMinutes(30);
 
         var lineLock = LineLock.Create(
+            user,
             game,
             moneyline,
             ravensOutcome,
@@ -458,7 +491,8 @@ class Program
         game.Complete(new Score(27, 24)); // Ravens win
         System.Console.WriteLine($"Final: Ravens 27 - 24 Steelers");
 
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
         settlementService.SettleMoneylineMarket(moneyline, game);
         settlementService.SettleBet(bet, new[] { game });
 
@@ -491,11 +525,12 @@ class Program
 
         // Create lock that expires in 1 second
         var shortLock = LineLock.Create(
+            user,
             futureGame,
             futureMarket,
             dolphinsOutcome,
-            new Money(3m),
-            new Money(100m),
+            new Money(3m, "USD"),
+            new Money(100m, "USD"),
             DateTime.UtcNow.AddSeconds(1)
         );
 
@@ -791,6 +826,9 @@ class Program
         System.Console.WriteLine("EDGE CASE TEST: Bet Placement");
         System.Console.WriteLine("------------------------------\n");
 
+        // Create test user
+        var user = CreateTestUser();
+
         int passCount = 0;
         int failCount = 0;
 
@@ -810,7 +848,7 @@ class Program
             market.AddOutcome(outcome);
             market.Close(); // Close the market
 
-            var bet = Bet.CreateSingle(new Money(100m), game, market, outcome);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, market, outcome);
             System.Console.WriteLine("  ❌ FAIL - Should have thrown exception");
             failCount++;
         }
@@ -835,8 +873,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var parlay = Bet.CreateParlay(
-                new Money(100m),
+            var parlay = Bet.CreateParlay(user, new Money(100m, "USD"),
                 (game, market, outcome) // Only 1 selection
             );
             System.Console.WriteLine("  ❌ FAIL - Should have thrown exception");
@@ -869,8 +906,7 @@ class Program
             market2.AddOutcome(outcome2);
             game.AddMarket(market2);
 
-            var parlay = Bet.CreateParlay(
-                new Money(100m),
+            var parlay = Bet.CreateParlay(user, new Money(100m, "USD"),
                 (game, market1, outcome1),
                 (game, market2, outcome2) // Same event
             );
@@ -902,8 +938,7 @@ class Program
             market2.Close(); // Close second market
             game2.AddMarket(market2);
 
-            var parlay = Bet.CreateParlay(
-                new Money(100m),
+            var parlay = Bet.CreateParlay(user, new Money(100m, "USD"),
                 (game1, market1, outcome1),
                 (game2, market2, outcome2)
             );
@@ -931,7 +966,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var bet = Bet.CreateSingle(new Money(0m), game, market, outcome);
+            var bet = Bet.CreateSingle(user, new Money(0m, "USD"), game, market, outcome);
             System.Console.WriteLine($"  ✓ PASS - Zero stake bet created: {bet.TicketNumber}");
             System.Console.WriteLine($"           Potential payout: {bet.PotentialPayout}");
             passCount++;
@@ -951,6 +986,9 @@ class Program
         System.Console.WriteLine("EDGE CASE TEST: Settlement Logic");
         System.Console.WriteLine("---------------------------------\n");
 
+        // Create test user
+        var user = CreateTestUser();
+
         int passCount = 0;
         int failCount = 0;
 
@@ -958,7 +996,8 @@ class Program
         var league = new League("NFL", "NFL", sport.Id);
         var team1 = new Team("Team1", "T1", league.Id, "Team One");
         var team2 = new Team("Team2", "T2", league.Id, "Team Two");
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
 
         // Test 1: Settling already settled bet
         System.Console.WriteLine("Test 1: Settling already settled bet should throw");
@@ -970,7 +1009,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var bet = Bet.CreateSingle(new Money(100m), game, market, outcome);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, market, outcome);
 
             game.Complete(new Score(10, 5));
             settlementService.SettleMoneylineMarket(market, game);
@@ -1009,8 +1048,7 @@ class Program
             market2.AddOutcome(outcome2);
             game2.AddMarket(market2);
 
-            var parlay = Bet.CreateParlay(
-                new Money(100m),
+            var parlay = Bet.CreateParlay(user, new Money(100m, "USD"),
                 (game1, market1, outcome1),
                 (game2, market2, outcome2)
             );
@@ -1052,7 +1090,7 @@ class Program
             spread.AddOutcome(outcome2);
             game.AddMarket(spread);
 
-            var bet = Bet.CreateSingle(new Money(100m), game, spread, outcome1);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, spread, outcome1);
 
             // Score exactly hits the line: Team1 wins by exactly 7
             game.Complete(new Score(21, 14));
@@ -1088,7 +1126,7 @@ class Program
             totals.AddOutcome(underOutcome);
             game.AddMarket(totals);
 
-            var bet = Bet.CreateSingle(new Money(100m), game, totals, overOutcome);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, totals, overOutcome);
 
             // Score exactly 45
             game.Complete(new Score(24, 21));
@@ -1131,8 +1169,7 @@ class Program
             market2.AddOutcome(outcome2);
             game2.AddMarket(market2);
 
-            var parlay = Bet.CreateParlay(
-                new Money(100m),
+            var parlay = Bet.CreateParlay(user, new Money(100m, "USD"),
                 (game1, market1, outcome1),
                 (game2, market2, outcome2)
             );
@@ -1180,7 +1217,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var bet = Bet.CreateSingle(new Money(100m), game, market, outcome);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, market, outcome);
 
             bet.Void(); // Manually void
 
@@ -1209,6 +1246,9 @@ class Program
         System.Console.WriteLine("EDGE CASE TEST: LineLock Functionality");
         System.Console.WriteLine("---------------------------------------\n");
 
+        // Create test user
+        var user = CreateTestUser();
+
         int passCount = 0;
         int failCount = 0;
 
@@ -1227,8 +1267,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddMilliseconds(100)
             );
@@ -1268,8 +1307,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddMinutes(30)
             );
@@ -1307,8 +1345,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddMinutes(30)
             );
@@ -1348,8 +1385,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddHours(2) // After event start!
             );
@@ -1386,8 +1422,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddMinutes(30)
             );
@@ -1421,14 +1456,12 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lock1 = LineLock.Create(
-                game, market, outcome,
+            var lock1 = LineLock.Create(user, game, market, outcome,
                 new Money(5m), new Money(100m),
                 DateTime.UtcNow.AddMinutes(30)
             );
 
-            var lock2 = LineLock.Create(
-                game, market, outcome,
+            var lock2 = LineLock.Create(user, game, market, outcome,
                 new Money(3m), new Money(50m),
                 DateTime.UtcNow.AddMinutes(20)
             );
@@ -1454,8 +1487,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(10m), new Money(200m),
                 DateTime.UtcNow.AddMinutes(30)
             );
@@ -1493,8 +1525,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m, "USD"),
                 new Money(100m, "USD"),
                 DateTime.UtcNow.AddMinutes(30)
@@ -1544,6 +1575,9 @@ class Program
     {
         System.Console.WriteLine("EDGE CASE TEST: Event Lifecycle");
         System.Console.WriteLine("--------------------------------\n");
+
+        // Create test user
+        var user = CreateTestUser();
 
         int passCount = 0;
         int failCount = 0;
@@ -1764,6 +1798,9 @@ class Program
         System.Console.WriteLine("EDGE CASE TEST: Event Cancellation & Refunds");
         System.Console.WriteLine("---------------------------------------------\n");
 
+        // Create test user
+        var user = CreateTestUser();
+
         int passCount = 0;
         int failCount = 0;
 
@@ -1771,7 +1808,8 @@ class Program
         var league = new League("NFL", "NFL", sport.Id);
         var team1 = new Team("Team1", "T1", league.Id, "Team One");
         var team2 = new Team("Team2", "T2", league.Id, "Team Two");
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
 
         // Test 1: Single bet refund when event cancelled
         System.Console.WriteLine("Test 1: Single bet refunded when event cancelled");
@@ -1784,7 +1822,7 @@ class Program
             game.AddMarket(market);
 
             var stake = new Money(100m, "USD");
-            var bet = Bet.CreateSingle(stake, game, market, outcome);
+            var bet = Bet.CreateSingle(user, stake, game, market, outcome);
 
             System.Console.WriteLine($"  Bet placed: {bet.TicketNumber}, Stake: {bet.Stake}");
 
@@ -1831,8 +1869,7 @@ class Program
             game2.AddMarket(market2);
 
             var stake = new Money(50m, "USD");
-            var parlay = Bet.CreateParlay(
-                stake,
+            var parlay = Bet.CreateParlay(user, stake,
                 (game1, market1, outcome1),
                 (game2, market2, outcome2)
             );
@@ -1881,7 +1918,7 @@ class Program
             market.Close();
 
             // Try to place bet
-            var bet = Bet.CreateSingle(new Money(100m), game, market, outcome);
+            var bet = Bet.CreateSingle(user, new Money(100m, "USD"), game, market, outcome);
 
             System.Console.WriteLine("  ❌ FAIL - Should have thrown exception");
             failCount++;
@@ -1908,8 +1945,7 @@ class Program
             game.AddMarket(market);
 
             var lockFee = new Money(10m, "USD");
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 lockFee,
                 new Money(200m, "USD"),
                 DateTime.UtcNow.AddMinutes(30)
@@ -1955,8 +1991,7 @@ class Program
             market.AddOutcome(outcome);
             game.AddMarket(market);
 
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 new Money(5m, "USD"),
                 new Money(100m, "USD"),
                 DateTime.UtcNow.AddMinutes(30)
@@ -2015,7 +2050,7 @@ class Program
             game.AddMarket(market);
 
             var stake = new Money(150m, "USD");
-            var bet = Bet.CreateSingle(stake, game, market, outcome);
+            var bet = Bet.CreateSingle(user, stake, game, market, outcome);
 
             System.Console.WriteLine($"  Bet placed: {bet.TicketNumber}, Stake: {bet.Stake}");
 
@@ -2053,8 +2088,7 @@ class Program
 
             // Create and exercise LineLock
             var lockFee = new Money(8m, "USD");
-            var lineLock = LineLock.Create(
-                game, market, outcome,
+            var lineLock = LineLock.Create(user, game, market, outcome,
                 lockFee,
                 new Money(100m, "USD"),
                 DateTime.UtcNow.AddMinutes(30)
@@ -2103,6 +2137,9 @@ class Program
         System.Console.WriteLine("EDGE CASE TEST: Decimal Precision & Wacky Numbers");
         System.Console.WriteLine("--------------------------------------------------\n");
 
+        // Create test user
+        var user = CreateTestUser();
+
         int passCount = 0;
         int failCount = 0;
 
@@ -2110,7 +2147,8 @@ class Program
         var league = new League("NFL", "NFL", sport.Id);
         var team1 = new Team("Team1", "T1", league.Id, "Team One");
         var team2 = new Team("Team2", "T2", league.Id, "Team Two");
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
 
         // Test 1: Fractional cents (repeating decimals)
         System.Console.WriteLine("Test 1: Money with fractional cents");
@@ -2168,7 +2206,7 @@ class Program
                 .Select(_ => (game, market, outcome))
                 .ToArray();
 
-            var parlay = Bet.CreateParlay(new Money(10m, "USD"), legs);
+            var parlay = Bet.CreateParlay(user, new Money(10m, "USD"), legs);
 
             var expectedOdds = Math.Pow((double)1.11111111m, 10);
             var actualOdds = parlay.CombinedOdds.DecimalValue;
@@ -2326,7 +2364,7 @@ class Program
             game.AddMarket(market);
 
             var weirdStake = new Money(77.77m, "USD");
-            var bet = Bet.CreateSingle(weirdStake, game, market, outcome1);
+            var bet = Bet.CreateSingle(user, weirdStake, game, market, outcome1);
 
             System.Console.WriteLine($"  Stake: {bet.Stake} (${bet.Stake.Amount})");
             System.Console.WriteLine($"  Odds: {bet.CombinedOdds.DecimalValue}");
@@ -2411,6 +2449,7 @@ class Program
             game2.AddMarket(market2);
 
             var parlay = Bet.CreateParlay(
+                user,
                 new Money(99.99m, "USD"),
                 (game1, market1, outcome1),
                 (game2, market2, outcome2)
@@ -2467,7 +2506,8 @@ class Program
         var league = new League("NFL", "NFL", sport.Id);
         var team1 = new Team("Team1", "T1", league.Id, "Team One");
         var team2 = new Team("Team2", "T2", league.Id, "Team Two");
-        var settlementService = new SettlementService();
+        var commissionService = new CommissionService(new CommissionConfiguration());
+        var settlementService = new SettlementService(commissionService);
 
         // Test 1: Market without Event - Settle should fail
         System.Console.WriteLine("Test 1: Settling orphaned Market (not attached to Event)");

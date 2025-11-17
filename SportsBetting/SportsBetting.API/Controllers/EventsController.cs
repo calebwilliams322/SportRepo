@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsBetting.API.DTOs;
@@ -13,6 +14,7 @@ namespace SportsBetting.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+// Note: Read endpoints (GET) are public, admin operations (POST/PUT) require Admin role
 public class EventsController : ControllerBase
 {
     private readonly SportsBettingDbContext _context;
@@ -92,12 +94,14 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>
-    /// Start an event
+    /// Start an event (Admin only)
     /// </summary>
     [HttpPost("{id}/start")]
+    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType<EventResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<EventResponse>> StartEvent(Guid id)
     {
         var evt = await _context.Events
@@ -132,12 +136,14 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>
-    /// Complete an event with final score
+    /// Complete an event with final score (Admin only)
     /// </summary>
     [HttpPost("{id}/complete")]
+    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType<EventResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<EventResponse>> CompleteEvent(Guid id, [FromBody] CompleteEventRequest request)
     {
         var evt = await _context.Events
@@ -173,12 +179,14 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>
-    /// Settle all markets for an event based on final score
+    /// Settle all markets for an event based on final score (Admin only)
     /// </summary>
     [HttpPost("{id}/settle")]
+    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType<EventResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<EventResponse>> SettleEvent(Guid id)
     {
         var evt = await _context.Events
@@ -233,12 +241,14 @@ public class EventsController : ControllerBase
     }
 
     /// <summary>
-    /// Update odds for an outcome
+    /// Update odds for an outcome (Admin only)
     /// </summary>
     [HttpPut("outcomes/{outcomeId}/odds")]
+    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType<OutcomeResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<OutcomeResponse>> UpdateOdds(Guid outcomeId, [FromBody] UpdateOddsRequest request)
     {
         if (request.NewOdds < 1.0m)

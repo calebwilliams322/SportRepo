@@ -33,6 +33,14 @@ public class OutcomeConfiguration : IEntityTypeConfiguration<Outcome>
         builder.Property(o => o.IsVoid)
             .IsRequired();
 
+        // Odds API integration properties
+        builder.Property(o => o.ExternalId)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
+        builder.Property(o => o.LastOddsUpdate)
+            .IsRequired(false);
+
         // Odds value object as owned type
         builder.ComplexProperty(o => o.CurrentOdds, oddsBuilder =>
         {
@@ -51,5 +59,12 @@ public class OutcomeConfiguration : IEntityTypeConfiguration<Outcome>
 
         builder.HasIndex(o => o.IsVoid)
             .HasDatabaseName("IX_Outcomes_IsVoid");
+
+        // Odds API indexes
+        builder.HasIndex(o => o.ExternalId)
+            .HasDatabaseName("IX_Outcomes_ExternalId");
+
+        builder.HasIndex(o => o.LastOddsUpdate)
+            .HasDatabaseName("IX_Outcomes_LastOddsUpdate");
     }
 }

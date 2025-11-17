@@ -35,6 +35,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasConversion<string>(); // Store enum as string for readability
 
+        builder.Property(u => u.CommissionTier)
+            .IsRequired()
+            .HasConversion<string>() // Store enum as string for readability
+            .HasDefaultValue(SportsBetting.Domain.Enums.CommissionTier.Standard);
+
+        builder.Property(u => u.CommissionTierLastUpdated);
+
         builder.Property(u => u.CreatedAt)
             .IsRequired();
 

@@ -1,0 +1,13 @@
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/bin/Debug/net9.0/SportsBettingListener.ScoreApi.deps.json
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/bin/Debug/net9.0/SportsBettingListener.ScoreApi.dll
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/bin/Debug/net9.0/SportsBettingListener.ScoreApi.pdb
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.csproj.AssemblyReference.cache
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.GeneratedMSBuildEditorConfig.editorconfig
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.AssemblyInfoInputs.cache
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.AssemblyInfo.cs
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.csproj.CoreCompileInputs.cache
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.sourcelink.json
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.dll
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/refint/SportsBettingListener.ScoreApi.dll
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/SportsBettingListener.ScoreApi.pdb
+/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/Debug/net9.0/ref/SportsBettingListener.ScoreApi.dll

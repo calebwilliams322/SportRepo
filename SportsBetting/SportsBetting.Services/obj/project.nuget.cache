@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "FDp5KS42yU4=",
+  "dgSpecHash": "SSE/enPkTZs=",
   "success": true,
-  "projectFilePath": "/Users/calebwilliams/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
+  "expectedPackageFiles": [
+    "/Users/calebwilliams/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

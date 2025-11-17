@@ -9,3 +9,16 @@
 /Users/calebwilliams/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/refint/SportsBetting.Domain.dll
 /Users/calebwilliams/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.pdb
 /Users/calebwilliams/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/ref/SportsBetting.Domain.dll
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/bin/Debug/net9.0/SportsBetting.Domain.deps.json
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/bin/Debug/net9.0/SportsBetting.Domain.dll
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/bin/Debug/net9.0/SportsBetting.Domain.pdb
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.csproj.AssemblyReference.cache
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.AssemblyInfoInputs.cache
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.AssemblyInfo.cs
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.csproj.CoreCompileInputs.cache
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.sourcelink.json
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.dll
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/refint/SportsBetting.Domain.dll
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/SportsBetting.Domain.pdb
+/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/Debug/net9.0/ref/SportsBetting.Domain.dll

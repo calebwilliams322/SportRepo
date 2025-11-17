@@ -46,6 +46,14 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasColumnName("FinalScore")
             .HasMaxLength(20);
 
+        // Odds API integration properties
+        builder.Property(e => e.ExternalId)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
+        builder.Property(e => e.LastSyncedAt)
+            .IsRequired(false);
+
         // Team relationships with shadow foreign keys
         builder.HasOne(e => e.HomeTeam)
             .WithMany()
@@ -76,6 +84,13 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         // Composite index for common queries
         builder.HasIndex(e => new { e.LeagueId, e.ScheduledStartTime })
             .HasDatabaseName("IX_Events_LeagueId_ScheduledStartTime");
+
+        // Odds API indexes for fast lookups
+        builder.HasIndex(e => e.ExternalId)
+            .HasDatabaseName("IX_Events_ExternalId");
+
+        builder.HasIndex(e => e.LastSyncedAt)
+            .HasDatabaseName("IX_Events_LastSyncedAt");
 
         // Relationships
         builder.HasMany<Market>()

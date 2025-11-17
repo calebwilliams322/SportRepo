@@ -28,6 +28,24 @@ public class Market
     /// </summary>
     public bool IsSettled { get; private set; }
 
+    // Hybrid System Support
+    /// <summary>
+    /// Market mode: Sportsbook, Exchange, or Hybrid
+    /// </summary>
+    public MarketMode Mode { get; private set; } = MarketMode.Sportsbook;
+
+    /// <summary>
+    /// Commission rate for exchange bets on this market (e.g., 0.02 = 2%)
+    /// Only applicable when Mode is Exchange or Hybrid
+    /// </summary>
+    public decimal? ExchangeCommissionRate { get; private set; }
+
+    /// <summary>
+    /// External ID from The Odds API market key
+    /// (e.g., "h2h", "spreads", "totals")
+    /// </summary>
+    public string? ExternalId { get; private set; }
+
     // Private parameterless constructor for EF Core
     private Market()
     {
@@ -201,6 +219,34 @@ public class Market
     public Outcome? GetOutcome(Guid outcomeId)
     {
         return _outcomes.FirstOrDefault(o => o.Id == outcomeId);
+    }
+
+    /// <summary>
+    /// Set external ID for API-created markets (called by Odds API Listener)
+    /// </summary>
+    public void SetExternalId(string externalId)
+    {
+        if (string.IsNullOrWhiteSpace(externalId))
+            throw new ArgumentException("External ID cannot be empty", nameof(externalId));
+
+        ExternalId = externalId;
+    }
+
+    /// <summary>
+    /// Configure market mode for API-created markets (called by Odds API Listener)
+    /// </summary>
+    public void SetMarketMode(MarketMode mode, decimal? exchangeCommissionRate = null)
+    {
+        Mode = mode;
+
+        if (mode == MarketMode.Exchange || mode == MarketMode.Hybrid)
+        {
+            ExchangeCommissionRate = exchangeCommissionRate ?? 0.02m; // Default 2% commission
+        }
+        else
+        {
+            ExchangeCommissionRate = null;
+        }
     }
 
     public override string ToString() => $"{Name} ({Type})";

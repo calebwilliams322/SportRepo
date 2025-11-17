@@ -2,9 +2,25 @@
   "version": 3,
   "targets": {
     "net9.0": {
+      "BCrypt.Net-Next/4.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "SportsBetting.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "BCrypt.Net-Next": "4.0.3"
+        },
         "compile": {
           "bin/placeholder/SportsBetting.Domain.dll": {}
         },
@@ -15,6 +31,37 @@
     }
   },
   "libraries": {
+    "BCrypt.Net-Next/4.0.3": {
+      "sha512": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "type": "package",
+      "path": "bcrypt.net-next/4.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.4.0.3.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt.Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/net5.0/BCrypt.Net-Next.dll",
+        "lib/net5.0/BCrypt.Net-Next.xml",
+        "lib/net6.0/BCrypt.Net-Next.dll",
+        "lib/net6.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt.Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
+      ]
+    },
     "SportsBetting.Domain/1.0.0": {
       "type": "project",
       "path": "../SportsBetting.Domain/SportsBetting.Domain.csproj",
@@ -32,11 +79,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/calebwilliams/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
+      "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
       "projectName": "SportsBetting.Services",
-      "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
+      "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Services/SportsBetting.Services.csproj",
       "packagesPath": "/Users/calebwilliams/.nuget/packages/",
-      "outputPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Services/obj/",
+      "outputPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Services/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
@@ -51,8 +98,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
-              "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
+            "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+              "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
             }
           }
         }

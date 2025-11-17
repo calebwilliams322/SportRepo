@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Exchange Betting: Matching Algorithm Design Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 2em;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .intro {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .motivation {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+        }
+
+        .important {
+            background: #ffe6e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .success {
+            background: #e6ffe6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #27ae60;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .example {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e9ecef;
+        }
+
+        .comparison-table th {
+            background: #2c3e50;
+        }
+
+        .pro {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .con {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .neutral {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 40px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .step-container {
+            display: flex;
+            align-items: start;
+            margin: 15px 0;
+        }
+
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .order-book {
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .order-book-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .order-amount {
+            color: #27ae60;
+            font-family: monospace;
+        }
+
+        .order-time {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .allocation-result {
+            background: #e8f5e9;
+            border-left: 5px solid #27ae60;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-family: monospace;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+        }
+
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .formula {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>P2P Exchange Betting: Matching Algorithm Design Guide</h1>
+
+        <div class="intro">
+            <p><strong>Document Purpose:</strong> This guide provides an in-depth technical explanation of the matching algorithms used in our peer-to-peer exchange betting platform. It covers the motivation, implementation details, and practical examples of FIFO, Pro-Rata, and Hybrid matching strategies.</p>
+            <p><strong>Target Audience:</strong> Software engineers and quantitative analysts working on exchange systems, order matching, and market microstructure.</p>
+            <p><strong>Last Updated:</strong> January 2025</p>
+        </div>
+
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#introduction">1. Introduction to P2P Exchange Betting</a></li>
+                <li><a href="#problem">2. The Matching Problem</a></li>
+                <li><a href="#fifo">3. FIFO Strategy (First-In-First-Out)</a></li>
+                <li><a href="#prorata">4. Pro-Rata Strategy</a></li>
+                <li><a href="#hybrid">5. Hybrid Strategy (Pro-Rata with Top)</a></li>
+                <li><a href="#comparison">6. Strategy Comparison</a></li>
+                <li><a href="#implementation">7. Implementation Details</a></li>
+                <li><a href="#conclusion">8. Conclusion & Recommendations</a></li>
+            </ul>
+        </div>
+
+        <h2 id="introduction">1. Introduction to P2P Exchange Betting</h2>
+
+        <h3>1.1 What is P2P Exchange Betting?</h3>
+        <p>Unlike traditional sportsbooks where you bet against the house, peer-to-peer (P2P) exchange betting allows users to bet against each other. The platform acts as a marketplace, matching opposing bets and taking a small commission on winnings.</p>
+
+        <h4>Key Concepts:</h4>
+        <ul>
+            <li><strong>Back Bet:</strong> Betting FOR an outcome (e.g., "Lakers will win")</li>
+            <li><strong>Lay Bet:</strong> Betting AGAINST an outcome (e.g., "Lakers will NOT win")</li>
+            <li><strong>Matching:</strong> Pairing Back bets with Lay bets at compatible odds</li>
+            <li><strong>Liquidity:</strong> The amount of money available to match at various odds levels</li>
+        </ul>
+
+        <div class="example">
+            <div class="example-title">Example: Simple Match</div>
+            <p><strong>Alice (Back):</strong> Bets $100 that Lakers will win at odds of 2.0</p>
+            <p><strong>Bob (Lay):</strong> Bets $100 that Lakers will NOT win at odds of 2.0</p>
+            <p><strong>Result:</strong> The platform matches these bets. If Lakers win, Alice gets $200 ($100 stake + $100 profit). If Lakers lose, Bob gets $200.</p>
+        </div>
+
+        <h3>1.2 The Role of the Matching Engine</h3>
+        <p>The matching engine is the critical component that determines:</p>
+        <ul>
+            <li>Which orders get matched first</li>
+            <li>How much of each order gets filled</li>
+            <li>How fairly liquidity is distributed among market participants</li>
+        </ul>
+
+        <div class="motivation">
+            <h4>Why Matching Strategy Matters</h4>
+            <p>Different matching strategies create different market dynamics and incentives:</p>
+            <ul>
+                <li><strong>Market Makers:</strong> Want rewards for being first to provide liquidity</li>
+                <li><strong>Large Institutional Traders:</strong> Want fair allocation proportional to their size</li>
+                <li><strong>Platform:</strong> Wants deep liquidity and fair, transparent markets</li>
+                <li><strong>Retail Traders:</strong> Want a simple, predictable system</li>
+            </ul>
+        </div>
+
+        <h2 id="problem">2. The Matching Problem</h2>
+
+        <h3>2.1 The Core Challenge</h3>
+        <p>When a new order arrives that can match with multiple existing orders, we must decide: <strong>How do we allocate the incoming order among the available candidates?</strong></p>
+
+        <div class="example">
+            <div class="example-title">The Allocation Problem</div>
+            <div class="order-book">
+                <div class="order-book-title">Order Book: Lakers Win @ 2.50 (Lay Side)</div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Alice</span>
+                        <span class="order-time">(10:00:00 AM)</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Bob</span>
+                        <span class="order-time">(10:00:05 AM)</span>
+                    </div>
+                    <span class="order-amount">$50</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Charlie</span>
+                        <span class="order-time">(10:00:10 AM)</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+            </div>
+
+            <p><strong>Incoming Order:</strong> David wants to Back $150 at odds 2.50</p>
+
+            <p><strong>Question:</strong> David's $150 can match with any of the three Lay orders above. How do we allocate it?</p>
+            <ul>
+                <li>Should Alice get priority because she was first?</li>
+                <li>Should Charlie get more because his order is larger?</li>
+                <li>Should everyone get a proportional share?</li>
+            </ul>
+        </div>
+
+        <h3>2.2 Why This Matters: Market Fairness</h3>
+
+        <div class="important">
+            <h4>The Fairness Dilemma</h4>
+            <p><strong>Time Priority (FIFO):</strong> Rewards early market makers but can be unfair to large orders that arrive later.</p>
+            <p><strong>Size Priority (Pro-Rata):</strong> Fair to large orders but removes the incentive to provide liquidity early.</p>
+            <p><strong>Trade-off:</strong> We need a balance that encourages liquidity while being fair to all participants.</p>
+        </div>
+
+        <h2 id="fifo">3. FIFO Strategy (First-In-First-Out)</h2>
+
+        <h3>3.1 Algorithm Description</h3>
+        <p>FIFO (First-In-First-Out) is the simplest matching strategy. Orders are matched in strict chronological order - the earliest order gets filled first, then the second earliest, and so on.</p>
+
+        <div class="code-block">public class FifoMatchingStrategy : IMatchingStrategy
+{
+    public Dictionary&lt;ExchangeBet, decimal&gt; AllocateMatches(
+        decimal incomingStake,
+        List&lt;ExchangeBet&gt; candidates)
+    {
+        var allocations = new Dictionary&lt;ExchangeBet, decimal&gt;();
+        var remainingStake = incomingStake;
+
+        // candidates are pre-sorted by CreatedAt (timestamp)
+        foreach (var candidate in candidates)
+        {
+            if (remainingStake &lt;= 0)
+                break;
+
+            var matchAmount = Math.Min(remainingStake, candidate.UnmatchedStake);
+            allocations[candidate] = matchAmount;
+            remainingStake -= matchAmount;
+        }
+
+        return allocations;
+    }
+}</div>
+
+        <h3>3.2 Step-by-Step Example</h3>
+
+        <div class="example">
+            <div class="example-title">FIFO Example: $150 Incoming Order</div>
+
+            <div class="order-book">
+                <div class="order-book-title">Resting Orders (Sorted by Time)</div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">1. Alice</span>
+                        <span class="order-time">10:00:00</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">2. Bob</span>
+                        <span class="order-time">10:00:05</span>
+                    </div>
+                    <span class="order-amount">$50</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">3. Charlie</span>
+                        <span class="order-time">10:00:10</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <strong>Match Alice's order:</strong><br>
+                    Remaining = $150, Alice wants $100<br>
+                    Allocation: <span class="highlight">Alice gets $100</span><br>
+                    Remaining: $150 - $100 = $50
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <strong>Match Bob's order:</strong><br>
+                    Remaining = $50, Bob wants $50<br>
+                    Allocation: <span class="highlight">Bob gets $50</span><br>
+                    Remaining: $50 - $50 = $0
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <strong>Charlie's order:</strong><br>
+                    Remaining = $0<br>
+                    Allocation: <span class="highlight">Charlie gets $0</span> (no liquidity left)
+                </div>
+            </div>
+
+            <div class="allocation-result">
+                <strong>Final Allocation:</strong>
+                <div class="result-row">
+                    <span>Alice:</span>
+                    <span>$100 (100% filled)</span>
+                </div>
+                <div class="result-row">
+                    <span>Bob:</span>
+                    <span>$50 (100% filled)</span>
+                </div>
+                <div class="result-row">
+                    <span>Charlie:</span>
+                    <span>$0 (0% filled)</span>
+                </div>
+                <div class="result-row" style="border-top: 2px solid #27ae60; margin-top: 10px; padding-top: 10px;">
+                    <span><strong>Total:</strong></span>
+                    <span><strong>$150</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <h3>3.3 Advantages of FIFO</h3>
+        <table>
+            <tr>
+                <th>Advantage</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Simplicity</span></td>
+                <td>Easiest algorithm to understand and implement. Deterministic and transparent.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Predictability</span></td>
+                <td>Traders know exactly where they are in the queue. No surprises.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Incentivizes Early Liquidity</span></td>
+                <td>Rewards market makers who provide liquidity first, encouraging deep order books.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Low Computational Cost</span></td>
+                <td>O(n) time complexity - just iterate through orders once.</td>
+            </tr>
+        </table>
+
+        <h3>3.4 Disadvantages of FIFO</h3>
+        <table>
+            <tr>
+                <th>Disadvantage</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="con">✗ Unfair to Large Orders</span></td>
+                <td>A large order providing significant liquidity gets no size advantage - treated same as small orders if it arrives later.</td>
+            </tr>
+            <tr>
+                <td><span class="con">✗ Queue Position Gaming</span></td>
+                <td>Traders might place many small orders early to get queue priority, then cancel if market moves against them.</td>
+            </tr>
+            <tr>
+                <td><span class="con">✗ Discourages Large Liquidity Providers</span></td>
+                <td>Institutional traders who want to place large orders don't get fair allocation if they aren't first in queue.</td>
+            </tr>
+        </table>
+
+        <div class="important">
+            <h4>Real-World Problem with Pure FIFO</h4>
+            <p>Imagine a large institutional trader wants to provide $10,000 of liquidity at good odds. Under FIFO, if there are 100 retail traders ahead of them with $10 orders each, the institution would need to wait for all $1,000 to be matched before getting any fills - despite providing 10x more liquidity!</p>
+            <p>This discourages large liquidity providers, leading to shallower markets.</p>
+        </div>
+
+        <h2 id="prorata">4. Pro-Rata Strategy</h2>
+
+        <h3>4.1 Algorithm Description</h3>
+        <p>Pro-Rata allocation distributes incoming orders proportionally based on the size of resting orders. If you're providing 40% of the available liquidity, you get 40% of the incoming order (or your full amount, whichever is smaller).</p>
+
+        <div class="formula">
+            Allocation<sub>trader</sub> = IncomingStake × (TraderSize / TotalLiquidity)
+        </div>
+
+        <div class="code-block">public class ProRataMatchingStrategy : IMatchingStrategy
+{
+    public Dictionary&lt;ExchangeBet, decimal&gt; AllocateMatches(
+        decimal incomingStake,
+        List&lt;ExchangeBet&gt; candidates)
+    {
+        var allocations = new Dictionary&lt;ExchangeBet, decimal&gt;();
+
+        if (candidates.Count == 0)
+            return allocations;
+
+        // Calculate total available liquidity
+        var totalLiquidity = candidates.Sum(c =&gt; c.UnmatchedStake);
+
+        // If incoming stake &gt;= total, fill everyone completely
+        if (incomingStake &gt;= totalLiquidity)
+        {
+            foreach (var candidate in candidates)
+                allocations[candidate] = candidate.UnmatchedStake;
+            return allocations;
+        }
+
+        // Pro-rata allocation
+        foreach (var candidate in candidates)
+        {
+            var proportion = candidate.UnmatchedStake / totalLiquidity;
+            var allocation = Math.Floor(incomingStake * proportion * 100) / 100;
+            allocations[candidate] = allocation;
+        }
+
+        // Handle rounding remainder (give to largest order)
+        var totalAllocated = allocations.Values.Sum();
+        var remainder = incomingStake - totalAllocated;
+
+        if (remainder &gt; 0)
+        {
+            var largestOrder = candidates
+                .OrderByDescending(c =&gt; c.UnmatchedStake)
+                .First();
+            allocations[largestOrder] += remainder;
+        }
+
+        return allocations;
+    }
+}</div>
+
+        <h3>4.2 Step-by-Step Example</h3>
+
+        <div class="example">
+            <div class="example-title">Pro-Rata Example: $150 Incoming Order</div>
+
+            <div class="order-book">
+                <div class="order-book-title">Resting Orders (Any Order - Time Doesn't Matter)</div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Alice</span>
+                    </div>
+                    <span class="order-amount">$100 (40% of total)</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Bob</span>
+                    </div>
+                    <span class="order-amount">$50 (20% of total)</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Charlie</span>
+                    </div>
+                    <span class="order-amount">$100 (40% of total)</span>
+                </div>
+                <div class="order-row" style="border-top: 2px solid #3498db; margin-top: 5px; padding-top: 5px;">
+                    <div><strong>Total Liquidity:</strong></div>
+                    <span class="order-amount"><strong>$250</strong></span>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <strong>Calculate proportions:</strong><br>
+                    Alice: $100 / $250 = 40%<br>
+                    Bob: $50 / $250 = 20%<br>
+                    Charlie: $100 / $250 = 40%
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <strong>Apply proportions to incoming stake ($150):</strong><br>
+                    Alice: 40% × $150 = <span class="highlight">$60</span><br>
+                    Bob: 20% × $150 = <span class="highlight">$30</span><br>
+                    Charlie: 40% × $150 = <span class="highlight">$60</span>
+                </div>
+            </div>
+
+            <div class="allocation-result">
+                <strong>Final Allocation:</strong>
+                <div class="result-row">
+                    <span>Alice:</span>
+                    <span>$60 (60% filled)</span>
+                </div>
+                <div class="result-row">
+                    <span>Bob:</span>
+                    <span>$30 (60% filled)</span>
+                </div>
+                <div class="result-row">
+                    <span>Charlie:</span>
+                    <span>$60 (60% filled)</span>
+                </div>
+                <div class="result-row" style="border-top: 2px solid #27ae60; margin-top: 10px; padding-top: 10px;">
+                    <span><strong>Total:</strong></span>
+                    <span><strong>$150</strong></span>
+                </div>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>Notice:</strong> Everyone gets the same fill percentage (60%), regardless of when they placed their order. Charlie benefits from Pro-Rata - under FIFO he got $0, here he gets $60!</p>
+        </div>
+
+        <h3>4.3 Advantages of Pro-Rata</h3>
+        <table>
+            <tr>
+                <th>Advantage</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Fair to Large Orders</span></td>
+                <td>Traders providing more liquidity get proportionally more fills. Encourages large size.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Discourages Queue Gaming</span></td>
+                <td>No advantage to placing many small orders early - size matters, not time.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Attracts Institutional Liquidity</span></td>
+                <td>Large traders (market makers, institutions) get fair treatment proportional to their contribution.</td>
+            </tr>
+            <tr>
+                <td><span class="pro">✓ Deeper Markets</span></td>
+                <td>Encourages traders to show larger size, leading to better liquidity discovery.</td>
+            </tr>
+        </table>
+
+        <h3>4.4 Disadvantages of Pro-Rata</h3>
+        <table>
+            <tr>
+                <th>Disadvantage</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td><span class="con">✗ No Incentive for Early Liquidity</span></td>
+                <td>Being first doesn't help - a trader who arrives 10 seconds later with the same size gets the same allocation.</td>
+            </tr>
+            <tr>
+                <td><span class="con">✗ More Complex</span></td>
+                <td>Requires calculating proportions, handling rounding, more computationally expensive than FIFO.</td>
+            </tr>
+            <tr>
+                <td><span class="con">✗ Partial Fills Common</span></td>
+                <td>Everyone tends to get partial fills rather than some getting 100% and others 0%.</td>
+            </tr>
+            <tr>
+                <td><span class="con">✗ Size Gaming Possible</span></td>
+                <td>Traders might place large orders they don't intend to fill just to get allocation, then cancel.</td>
+            </tr>
+        </table>
+
+        <h3>4.5 Real-World Example: Why Pro-Rata Matters</h3>
+
+        <div class="example">
+            <div class="example-title">Institutional Trader Scenario</div>
+
+            <p><strong>Scenario:</strong> A market maker wants to provide deep liquidity on an NFL game.</p>
+
+            <div class="order-book">
+                <div class="order-book-title">Order Book Before Market Maker</div>
+                <div class="order-row">
+                    <span class="order-name">10 retail traders</span>
+                    <span class="order-amount">$10 each = $100 total</span>
+                </div>
+            </div>
+
+            <p>Market maker adds: <strong>$10,000</strong></p>
+
+            <p><strong>Incoming order: $500</strong></p>
+
+            <table style="margin-top: 20px;">
+                <tr>
+                    <th>Strategy</th>
+                    <th>Market Maker Gets</th>
+                    <th>Retail Traders Get</th>
+                    <th>Market Maker Fill %</th>
+                </tr>
+                <tr>
+                    <td><strong>FIFO</strong></td>
+                    <td>$0</td>
+                    <td>$100 (all 10 filled completely)</td>
+                    <td>0%</td>
+                </tr>
+                <tr>
+                    <td><strong>Pro-Rata</strong></td>
+                    <td>$495</td>
+                    <td>$5 total (split among 10)</td>
+                    <td>4.95%</td>
+                </tr>
+            </table>
+
+            <div class="success">
+                <p><strong>Analysis:</strong> Under FIFO, the market maker providing 99% of the liquidity gets 0% of the fill because they weren't first. Under Pro-Rata, they get 99% of the fill, which is fair and encourages them to continue providing liquidity.</p>
+            </div>
+        </div>
+
+        <h2 id="hybrid">5. Hybrid Strategy (Pro-Rata with Top)</h2>
+
+        <h3>5.1 The Best of Both Worlds</h3>
+        <p>The hybrid strategy (formally called "Pro-Rata with Top") combines FIFO and Pro-Rata to create a balanced approach that:</p>
+        <ul>
+            <li><strong>Rewards early market makers</strong> (via FIFO component)</li>
+            <li><strong>Treats large orders fairly</strong> (via Pro-Rata component)</li>
+            <li><strong>Balances retail and institutional needs</strong></li>
+        </ul>
+
+        <div class="motivation">
+            <h4>Why We Need a Hybrid Approach</h4>
+            <p><strong>Pure FIFO Problem:</strong> Discourages large liquidity providers</p>
+            <p><strong>Pure Pro-Rata Problem:</strong> Removes incentive to provide liquidity early</p>
+            <p><strong>Solution:</strong> Split incoming orders between both strategies with configurable percentages</p>
+        </div>
+
+        <h3>5.2 Algorithm Description</h3>
+        <p>The hybrid strategy works in two phases:</p>
+
+        <div class="step-container">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <strong>FIFO Phase (X% of incoming order):</strong><br>
+                Allocate a percentage (e.g., 40%) of the incoming stake using FIFO to the top N orders (e.g., top 1 order)
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <strong>Pro-Rata Phase (remaining Y%):</strong><br>
+                Allocate the remaining percentage (e.g., 60%) using Pro-Rata across ALL orders (including top orders' remaining capacity)
+            </div>
+        </div>
+
+        <div class="code-block">public class ProRataWithTopMatchingStrategy : IMatchingStrategy
+{
+    private readonly int _topOrderCount;
+    private readonly decimal _topAllocationPercent;
+
+    public ProRataWithTopMatchingStrategy(
+        int topOrderCount = 1,
+        decimal topAllocationPercent = 0.40m)
+    {
+        _topOrderCount = topOrderCount;
+        _topAllocationPercent = topAllocationPercent;
+    }
+
+    public Dictionary&lt;ExchangeBet, decimal&gt; AllocateMatches(
+        decimal incomingStake,
+        List&lt;ExchangeBet&gt; candidates)
+    {
+        var allocations = new Dictionary&lt;ExchangeBet, decimal&gt;();
+
+        if (candidates.Count == 0)
+            return allocations;
+
+        // Split stake: X% FIFO, Y% Pro-Rata
+        var fifoAmount = incomingStake * _topAllocationPercent;
+        var proRataAmount = incomingStake - fifoAmount;
+
+        // Phase 1: FIFO to top N orders
+        var topOrders = candidates.Take(_topOrderCount).ToList();
+        var fifoStrategy = new FifoMatchingStrategy();
+        var fifoAllocations = fifoStrategy.AllocateMatches(fifoAmount, topOrders);
+
+        foreach (var allocation in fifoAllocations)
+            allocations[allocation.Key] = allocation.Value;
+
+        // Track remaining capacity
+        var remainingCapacity = topOrders.ToDictionary(
+            o =&gt; o,
+            o =&gt; o.UnmatchedStake - (fifoAllocations.ContainsKey(o) ? fifoAllocations[o] : 0)
+        );
+
+        // If FIFO didn't use all allocation, add to Pro-Rata pool
+        var fifoUsed = fifoAllocations.Values.Sum();
+        if (fifoUsed &lt; fifoAmount)
+            proRataAmount += (fifoAmount - fifoUsed);
+
+        // Phase 2: Pro-Rata across all orders (with remaining capacity)
+        var proRataCandidates = candidates
+            .Select(c =&gt; new {
+                Bet = c,
+                Available = remainingCapacity.ContainsKey(c)
+                    ? remainingCapacity[c]
+                    : c.UnmatchedStake
+            })
+            .Where(x =&gt; x.Available &gt; 0)
+            .ToList();
+
+        if (proRataCandidates.Count &gt; 0 && proRataAmount &gt; 0)
+        {
+            var totalAvailable = proRataCandidates.Sum(c =&gt; c.Available);
+
+            foreach (var candidate in proRataCandidates)
+            {
+                var proportion = candidate.Available / totalAvailable;
+                var allocation = Math.Floor(proRataAmount * proportion * 100) / 100;
+
+                if (allocations.ContainsKey(candidate.Bet))
+                    allocations[candidate.Bet] += allocation;
+                else
+                    allocations[candidate.Bet] = allocation;
+            }
+
+            // Handle rounding
+            var proRataAllocated = allocations.Values.Sum() - fifoUsed;
+            var remainder = proRataAmount - proRataAllocated;
+
+            if (remainder &gt; 0)
+            {
+                var largest = proRataCandidates
+                    .OrderByDescending(c =&gt; c.Available)
+                    .First();
+                allocations[largest.Bet] += remainder;
+            }
+        }
+
+        return allocations;
+    }
+}</div>
+
+        <h3>5.3 Detailed Example: 40/60 Hybrid</h3>
+
+        <div class="example">
+            <div class="example-title">Hybrid Example: 40% FIFO to Top 1, 60% Pro-Rata to All</div>
+
+            <div class="order-book">
+                <div class="order-book-title">Resting Orders</div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Alice</span>
+                        <span class="order-time">10:00:00 (FIRST)</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Bob</span>
+                        <span class="order-time">10:00:05</span>
+                    </div>
+                    <span class="order-amount">$50</span>
+                </div>
+                <div class="order-row">
+                    <div>
+                        <span class="order-name">Charlie</span>
+                        <span class="order-time">10:00:10</span>
+                    </div>
+                    <span class="order-amount">$100</span>
+                </div>
+            </div>
+
+            <p><strong>Incoming Order: $150</strong></p>
+
+            <h4 style="color: #3498db;">Phase 1: FIFO (40% = $60)</h4>
+
+            <div class="step-container">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <strong>Allocate $60 using FIFO to top 1 order:</strong><br>
+                    Alice is top order, wants $100<br>
+                    Allocation: <span class="highlight">Alice gets $60</span><br>
+                    Alice remaining capacity: $100 - $60 = $40
+                </div>
+            </div>
+
+            <h4 style="color: #3498db;">Phase 2: Pro-Rata (60% = $90)</h4>
+
+            <div class="step-container">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <strong>Calculate remaining capacity:</strong><br>
+                    Alice: $40 (21.1% of $190)<br>
+                    Bob: $50 (26.3% of $190)<br>
+                    Charlie: $100 (52.6% of $190)<br>
+                    <strong>Total: $190</strong>
+                </div>
+            </div>
+
+            <div class="step-container">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <strong>Allocate $90 pro-rata:</strong><br>
+                    Alice: 21.1% × $90 = <span class="highlight">$19</span><br>
+                    Bob: 26.3% × $90 = <span class="highlight">$23</span><br>
+                    Charlie: 52.6% × $90 = <span class="highlight">$48</span>
+                </div>
+            </div>
+
+            <div class="allocation-result">
+                <strong>Final Allocation (FIFO + Pro-Rata):</strong>
+                <div class="result-row">
+                    <span>Alice:</span>
+                    <span>$60 + $19 = $79 (79% filled) 🏆 Rewarded for being first!</span>
+                </div>
+                <div class="result-row">
+                    <span>Bob:</span>
+                    <span>$0 + $23 = $23 (46% filled)</span>
+                </div>
+                <div class="result-row">
+                    <span>Charlie:</span>
+                    <span>$0 + $48 = $48 (48% filled) ⭐ Better than FIFO's $0!</span>
+                </div>
+                <div class="result-row" style="border-top: 2px solid #27ae60; margin-top: 10px; padding-top: 10px;">
+                    <span><strong>Total:</strong></span>
+                    <span><strong>$150</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <h3>5.4 Comparison with Pure Strategies</h3>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Trader</th>
+                <th>Order Size</th>
+                <th>FIFO</th>
+                <th>Pro-Rata</th>
+                <th>Hybrid (40/60)</th>
+            </tr>
+            <tr>
+                <td>Alice (1st)</td>
+                <td>$100</td>
+                <td>$100 (100%)</td>
+                <td>$60 (60%)</td>
+                <td>$79 (79%)</td>
+            </tr>
+            <tr>
+                <td>Bob (2nd)</td>
+                <td>$50</td>
+                <td>$50 (100%)</td>
+                <td>$30 (60%)</td>
+                <td>$23 (46%)</td>
+            </tr>
+            <tr>
+                <td>Charlie (3rd)</td>
+                <td>$100</td>
+                <td>$0 (0%)</td>
+                <td>$60 (60%)</td>
+                <td>$48 (48%)</td>
+            </tr>
+        </table>
+
+        <div class="success">
+            <h4>Key Insights:</h4>
+            <ul>
+                <li><strong>Alice benefits from being first:</strong> Gets 79% under hybrid vs 60% under pro-rata (19% bonus for being early)</li>
+                <li><strong>Charlie avoids FIFO's unfairness:</strong> Gets 48% under hybrid vs 0% under FIFO</li>
+                <li><strong>Balance achieved:</strong> Early traders get advantage, but large late orders aren't shut out</li>
+            </ul>
+        </div>
+
+        <h3>5.5 Configuration Options</h3>
+        <p>The hybrid strategy is highly configurable to match market needs:</p>
+
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+                <th>Default</th>
+                <th>Impact</th>
+            </tr>
+            <tr>
+                <td><code>topOrderCount</code></td>
+                <td>Number of top orders to receive FIFO priority</td>
+                <td>1</td>
+                <td>Higher = more orders get time priority</td>
+            </tr>
+            <tr>
+                <td><code>topAllocationPercent</code></td>
+                <td>Percentage allocated via FIFO</td>
+                <td>40% (0.40)</td>
+                <td>Higher = more FIFO-like, lower = more Pro-Rata-like</td>
+            </tr>
+        </table>
+
+        <h4>Configuration Examples:</h4>
+
+        <div class="code-block">// Conservative (70% FIFO, 30% Pro-Rata)
+// Strongly rewards early market makers
+new ProRataWithTopMatchingStrategy(
+    topOrderCount: 2,
+    topAllocationPercent: 0.70m
+)
+
+// Balanced (40% FIFO, 60% Pro-Rata) - RECOMMENDED
+// Good balance for most markets
+new ProRataWithTopMatchingStrategy(
+    topOrderCount: 1,
+    topAllocationPercent: 0.40m
+)
+
+// Aggressive (20% FIFO, 80% Pro-Rata)
+// Heavily favors size over time
+new ProRataWithTopMatchingStrategy(
+    topOrderCount: 1,
+    topAllocationPercent: 0.20m
+)</div>
+
+        <h2 id="comparison">6. Strategy Comparison</h2>
+
+        <h3>6.1 Comprehensive Comparison Matrix</h3>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Criterion</th>
+                <th>FIFO</th>
+                <th>Pro-Rata</th>
+                <th>Hybrid (40/60)</th>
+            </tr>
+            <tr>
+                <td><strong>Simplicity</strong></td>
+                <td><span class="pro">Excellent</span><br>Very simple</td>
+                <td><span class="neutral">Good</span><br>Moderate complexity</td>
+                <td><span class="neutral">Good</span><br>Moderate complexity</td>
+            </tr>
+            <tr>
+                <td><strong>Early Liquidity Incentive</strong></td>
+                <td><span class="pro">Excellent</span><br>Strong time priority</td>
+                <td><span class="con">Poor</span><br>No time advantage</td>
+                <td><span class="pro">Good</span><br>Balanced advantage</td>
+            </tr>
+            <tr>
+                <td><strong>Large Order Fairness</strong></td>
+                <td><span class="con">Poor</span><br>No size priority</td>
+                <td><span class="pro">Excellent</span><br>Proportional to size</td>
+                <td><span class="pro">Good</span><br>Size gets fair share</td>
+            </tr>
+            <tr>
+                <td><strong>Predictability</strong></td>
+                <td><span class="pro">Excellent</span><br>Know exact queue position</td>
+                <td><span class="neutral">Good</span><br>Depends on total size</td>
+                <td><span class="neutral">Good</span><br>Partially predictable</td>
+            </tr>
+            <tr>
+                <td><strong>Gaming Resistance</strong></td>
+                <td><span class="con">Poor</span><br>Queue jumping tactics</td>
+                <td><span class="neutral">Moderate</span><br>Size gaming possible</td>
+                <td><span class="pro">Good</span><br>Balanced disincentives</td>
+            </tr>
+            <tr>
+                <td><strong>Institutional Appeal</strong></td>
+                <td><span class="con">Low</span><br>Unfair to large orders</td>
+                <td><span class="pro">High</span><br>Size-based allocation</td>
+                <td><span class="pro">High</span><br>Fair to all sizes</td>
+            </tr>
+            <tr>
+                <td><strong>Market Depth</strong></td>
+                <td><span class="neutral">Moderate</span><br>May discourage size</td>
+                <td><span class="pro">Good</span><br>Encourages large orders</td>
+                <td><span class="pro">Good</span><br>Balanced incentives</td>
+            </tr>
+            <tr>
+                <td><strong>Computational Cost</strong></td>
+                <td><span class="pro">Low</span><br>O(n) iteration</td>
+                <td><span class="neutral">Medium</span><br>O(n) + proportions</td>
+                <td><span class="neutral">Medium</span><br>Two-phase allocation</td>
+            </tr>
+        </table>
+
+        <h3>6.2 Use Case Recommendations</h3>
+
+        <div class="example">
+            <div class="example-title">When to Use Each Strategy</div>
+
+            <h4>Use FIFO When:</h4>
+            <ul>
+                <li>Market is primarily retail traders with small orders</li>
+                <li>Simplicity and transparency are paramount</li>
+                <li>You want to strongly incentivize early market making</li>
+                <li>Computational resources are very limited</li>
+            </ul>
+
+            <h4>Use Pro-Rata When:</h4>
+            <ul>
+                <li>Market has many institutional/large traders</li>
+                <li>You want to maximize liquidity depth</li>
+                <li>Fairness to size is more important than time priority</li>
+                <li>Queue gaming has been a problem</li>
+            </ul>
+
+            <h4>Use Hybrid (Recommended) When:</h4>
+            <ul>
+                <li><strong>Mixed trader base</strong> (retail + institutional)</li>
+                <li><strong>Need to balance</strong> early-bird advantage with size fairness</li>
+                <li><strong>Building a professional exchange</strong> competing with established platforms</li>
+                <li><strong>Industry best practice</strong> - used by major exchanges (CME, ICE, etc.)</li>
+            </ul>
+        </div>
+
+        <h3>6.3 Real Exchange Examples</h3>
+
+        <table>
+            <tr>
+                <th>Exchange</th>
+                <th>Market</th>
+                <th>Strategy</th>
+                <th>Reasoning</th>
+            </tr>
+            <tr>
+                <td><strong>CME</strong></td>
+                <td>Futures</td>
+                <td>Pro-Rata with Top</td>
+                <td>Balances speed and size in high-frequency markets</td>
+            </tr>
+            <tr>
+                <td><strong>Betfair</strong></td>
+                <td>Betting Exchange</td>
+                <td>FIFO</td>
+                <td>Simplicity for retail users, time priority rewards liquidity</td>
+            </tr>
+            <tr>
+                <td><strong>ICE Futures</strong></td>
+                <td>Energy</td>
+                <td>Hybrid</td>
+                <td>Large institutional orders need fair treatment</td>
+            </tr>
+            <tr>
+                <td><strong>NASDAQ</strong></td>
+                <td>Equities</td>
+                <td>Price-Time (FIFO at price level)</td>
+                <td>Transparent, simple for public equities</td>
+            </tr>
+        </table>
+
+        <h2 id="implementation">7. Implementation Details</h2>
+
+        <h3>7.1 Architecture Overview</h3>
+
+        <div class="code-block">// Strategy Pattern Implementation
+public interface IMatchingStrategy
+{
+    /// &lt;summary&gt;
+    /// Allocate an incoming order against candidate bets
+    /// &lt;/summary&gt;
+    /// &lt;param name="incomingStake"&gt;Amount to allocate&lt;/param&gt;
+    /// &lt;param name="candidates"&gt;Pre-sorted candidate bets&lt;/param&gt;
+    /// &lt;returns&gt;Dictionary of bet to allocated amount&lt;/returns&gt;
+    Dictionary&lt;ExchangeBet, decimal&gt; AllocateMatches(
+        decimal incomingStake,
+        List&lt;ExchangeBet&gt; candidates);
+}
+
+// Register in dependency injection (Program.cs)
+builder.Services.AddScoped&lt;IMatchingStrategy&gt;(sp =&gt;
+{
+    return new ProRataWithTopMatchingStrategy(
+        topOrderCount: 1,
+        topAllocationPercent: 0.40m
+    );
+});</div>
+
+        <h3>7.2 Integration with Matching Engine</h3>
+
+        <div class="code-block">public class BetMatchingService
+{
+    private readonly IMatchingStrategy _strategy;
+
+    public async Task&lt;MatchResult&gt; MatchBetAsync(ExchangeBet newBet)
+    {
+        // 1. Find candidate orders (opposite side, compatible odds)
+        var candidates = await GetMatchingCandidatesAsync(
+            newBet.OutcomeId,
+            oppositeSide,
+            newBet.ProposedOdds
+        );
+
+        // 2. Use strategy to allocate matches
+        var allocations = _strategy.AllocateMatches(
+            newBet.TotalStake,
+            candidates
+        );
+
+        // 3. Create matches based on allocations
+        foreach (var (candidate, amount) in allocations)
+        {
+            if (amount &lt;= 0) continue;
+
+            var match = new BetMatch(
+                backBet: newBet.Side == BetSide.Back ? newBet : candidate,
+                layBet: newBet.Side == BetSide.Lay ? newBet : candidate,
+                matchedStake: amount,
+                matchedOdds: newBet.ProposedOdds
+            );
+
+            // Update bet states
+            newBet.ApplyMatch(amount);
+            candidate.ApplyMatch(amount);
+
+            _context.BetMatches.Add(match);
+        }
+
+        await _context.SaveChangesAsync();
+        return result;
+    }
+}</div>
+
+        <h3>7.3 Performance Considerations</h3>
+
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>Consideration</th>
+                <th>Optimization</th>
+            </tr>
+            <tr>
+                <td><strong>Time Complexity</strong></td>
+                <td>All strategies are O(n) where n = candidate count</td>
+                <td>Pre-sort candidates once before allocation</td>
+            </tr>
+            <tr>
+                <td><strong>Space Complexity</strong></td>
+                <td>O(n) for allocations dictionary</td>
+                <td>Use Dictionary with initial capacity</td>
+            </tr>
+            <tr>
+                <td><strong>Rounding</strong></td>
+                <td>Pro-Rata requires handling remainder</td>
+                <td>Floor to 2 decimals, give remainder to largest</td>
+            </tr>
+            <tr>
+                <td><strong>Concurrency</strong></td>
+                <td>Multiple matches happening simultaneously</td>
+                <td>Transaction isolation, optimistic locking</td>
+            </tr>
+        </table>
+
+        <h3>7.4 Testing Strategy</h3>
+
+        <div class="example">
+            <div class="example-title">Test Coverage</div>
+
+            <h4>Unit Tests (10 test cases):</h4>
+            <ul>
+                <li>✓ FIFO basic scenario</li>
+                <li>✓ FIFO overflow (incoming > available)</li>
+                <li>✓ Pro-Rata basic scenario</li>
+                <li>✓ Pro-Rata overflow</li>
+                <li>✓ Hybrid 40/60 basic</li>
+                <li>✓ Hybrid 70/30 (aggressive FIFO)</li>
+                <li>✓ Hybrid 20/80 (aggressive Pro-Rata)</li>
+                <li>✓ Empty order book edge case</li>
+                <li>✓ Zero incoming stake edge case</li>
+                <li>✓ Single order edge case</li>
+            </ul>
+
+            <p><strong>All tests passing:</strong> 10/10 ✅</p>
+        </div>
+
+        <h2 id="conclusion">8. Conclusion & Recommendations</h2>
+
+        <h3>8.1 Our Decision: Hybrid (Pro-Rata with Top)</h3>
+
+        <div class="success">
+            <h4>Why We Chose Hybrid (40% FIFO / 60% Pro-Rata)</h4>
+            <ol>
+                <li><strong>Balances competing needs:</strong> Rewards early liquidity while being fair to size</li>
+                <li><strong>Industry proven:</strong> Used by major derivatives exchanges (CME, ICE)</li>
+                <li><strong>Scalable:</strong> Works well as market grows from retail to institutional</li>
+                <li><strong>Configurable:</strong> Can adjust percentages as market matures</li>
+                <li><strong>Fair perception:</strong> Both small and large traders see value</li>
+            </ol>
+        </div>
+
+        <h3>8.2 Configuration Guidance</h3>
+
+        <div class="motivation">
+            <h4>Recommended Settings by Market Phase</h4>
+
+            <p><strong>Phase 1 - Launch (Months 1-3):</strong></p>
+            <div class="code-block">new ProRataWithTopMatchingStrategy(
+    topOrderCount: 1,
+    topAllocationPercent: 0.50m  // 50/50 - reward early adopters
+)</div>
+
+            <p><strong>Phase 2 - Growth (Months 4-12):</strong></p>
+            <div class="code-block">new ProRataWithTopMatchingStrategy(
+    topOrderCount: 1,
+    topAllocationPercent: 0.40m  // 40/60 - balanced (CURRENT)
+)</div>
+
+            <p><strong>Phase 3 - Mature (Year 2+):</strong></p>
+            <div class="code-block">new ProRataWithTopMatchingStrategy(
+    topOrderCount: 1,
+    topAllocationPercent: 0.30m  // 30/70 - attract large traders
+)</div>
+        </div>
+
+        <h3>8.3 Future Enhancements</h3>
+
+        <ul>
+            <li><strong>Dynamic adjustment:</strong> Automatically adjust percentages based on market conditions</li>
+            <li><strong>Market-specific strategies:</strong> Different strategies for different sports/events</li>
+            <li><strong>Size tiers:</strong> Give extra allocation to orders above certain thresholds</li>
+            <li><strong>Maker/taker discrimination:</strong> Different rules for liquidity providers vs takers</li>
+            <li><strong>Performance metrics:</strong> Track fill rates, queue times, user satisfaction by strategy</li>
+        </ul>
+
+        <h3>8.4 Key Takeaways</h3>
+
+        <div class="important">
+            <h4>Remember These Principles:</h4>
+            <ul>
+                <li>📊 <strong>No perfect strategy exists</strong> - every approach has trade-offs</li>
+                <li>⚖️ <strong>Balance is key</strong> - hybrid approaches work best for diverse user bases</li>
+                <li>🎯 <strong>Match strategy to market</strong> - what works for retail may not work for institutions</li>
+                <li>🔧 <strong>Stay configurable</strong> - needs will change as your platform grows</li>
+                <li>📈 <strong>Measure and iterate</strong> - use data to guide strategy evolution</li>
+            </ul>
+        </div>
+
+        <h3>8.5 Further Reading</h3>
+
+        <ul>
+            <li><a href="https://www.cmegroup.com/confluence/display/EPICSANDBOX/Matching+Algorithms">CME Group: Matching Algorithms</a></li>
+            <li><a href="https://www.theice.com/futures-us/regulation/matching-algorithm">ICE: Matching Algorithm Details</a></li>
+            <li>Harris, L. (2003). Trading and Exchanges: Market Microstructure for Practitioners</li>
+            <li>O'Hara, M. (1995). Market Microstructure Theory</li>
+        </ul>
+
+        <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #ecf0f1; text-align: center; color: #7f8c8d;">
+            <p><strong>SportsBetting P2P Exchange Platform</strong></p>
+            <p>Matching Algorithm Design Documentation</p>
+            <p>© 2025 - Internal Technical Documentation</p>
+        </div>
+    </div>
+</body>
+</html>

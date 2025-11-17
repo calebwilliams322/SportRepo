@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportsBetting.API.DTOs;
@@ -7,12 +8,14 @@ using SportsBetting.Domain.Enums;
 using SportsBetting.Domain.Exceptions;
 using SportsBetting.Domain.Services;
 using SportsBetting.Domain.ValueObjects;
+using System.Security.Claims;
 
 namespace SportsBetting.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+[Authorize] // Require authentication for all endpoints in this controller
 public class BetsController : ControllerBase
 {
     private readonly SportsBettingDbContext _context;
@@ -37,6 +40,7 @@ public class BetsController : ControllerBase
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType<BetResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BetResponse>> GetBet(Guid id)
     {
@@ -49,6 +53,14 @@ public class BetsController : ControllerBase
             return NotFound(new { message = $"Bet {id} not found" });
         }
 
+        // AUTHORIZATION: Check if user can access this bet
+        if (!CanAccessBet(bet.UserId))
+        {
+            _logger.LogWarning("User {CurrentUser} attempted to access bet {BetId} owned by {BetOwner}",
+                GetCurrentUserId(), id, bet.UserId);
+            return Forbid();
+        }
+
         return Ok(MapToBetResponse(bet));
     }
 
@@ -57,12 +69,21 @@ public class BetsController : ControllerBase
     /// </summary>
     [HttpGet("user/{userId}")]
     [ProducesResponseType<List<BetResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<List<BetResponse>>> GetUserBets(
         Guid userId,
         [FromQuery] string? status = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
+        // AUTHORIZATION: Check if user can access these bets
+        if (!CanAccessBet(userId))
+        {
+            _logger.LogWarning("User {CurrentUser} attempted to access bets for user {RequestedUser}",
+                GetCurrentUserId(), userId);
+            return Forbid();
+        }
+
         var query = _context.Bets
             .Include(b => b.Selections)
             .Where(b => b.UserId == userId);
@@ -83,7 +104,7 @@ public class BetsController : ControllerBase
     }
 
     /// <summary>
-    /// Place a single bet
+    /// Place a single bet (for the currently logged-in user)
     /// </summary>
     [HttpPost("single")]
     [ProducesResponseType<BetResponse>(StatusCodes.Status201Created)]
@@ -91,9 +112,19 @@ public class BetsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BetResponse>> PlaceSingleBet(
-        [FromQuery] Guid userId,
         [FromBody] PlaceBetRequest request)
     {
+        // AUTHORIZATION: Get current user ID from JWT token
+        // Users can ONLY place bets for themselves
+        var userId = GetCurrentUserId();
+
+        // SECURITY: Prevent Support users from placing bets (conflict of interest)
+        if (User.IsInRole("Support"))
+        {
+            _logger.LogWarning("Support user {UserId} attempted to place a bet (forbidden)", userId);
+            return Forbid();
+        }
+
         if (request.Stake <= 0)
         {
             return BadRequest(new { message = "Stake must be greater than zero" });
@@ -203,7 +234,7 @@ public class BetsController : ControllerBase
     }
 
     /// <summary>
-    /// Place a parlay bet
+    /// Place a parlay bet (for the currently logged-in user)
     /// </summary>
     [HttpPost("parlay")]
     [ProducesResponseType<BetResponse>(StatusCodes.Status201Created)]
@@ -211,9 +242,19 @@ public class BetsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BetResponse>> PlaceParlayBet(
-        [FromQuery] Guid userId,
         [FromBody] PlaceParlayBetRequest request)
     {
+        // AUTHORIZATION: Get current user ID from JWT token
+        // Users can ONLY place bets for themselves
+        var userId = GetCurrentUserId();
+
+        // SECURITY: Prevent Support users from placing bets (conflict of interest)
+        if (User.IsInRole("Support"))
+        {
+            _logger.LogWarning("Support user {UserId} attempted to place a parlay bet (forbidden)", userId);
+            return Forbid();
+        }
+
         if (request.Stake <= 0)
         {
             return BadRequest(new { message = "Stake must be greater than zero" });
@@ -332,11 +373,13 @@ public class BetsController : ControllerBase
     }
 
     /// <summary>
-    /// Settle a bet and process payout if won
+    /// Settle a bet and process payout if won (Admin only)
     /// </summary>
     [HttpPost("{id}/settle")]
+    [Authorize(Policy = "AdminOnly")]
     [ProducesResponseType<BetResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BetResponse>> SettleBet(Guid id)
     {
@@ -427,5 +470,41 @@ public class BetsController : ControllerBase
                 s.Result.ToString()
             )).ToList()
         );
+    }
+
+    // ============ AUTHORIZATION HELPER METHODS ============
+
+    /// <summary>
+    /// Get the current logged-in user's ID from JWT claims
+    /// </summary>
+    private Guid GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            throw new UnauthorizedAccessException("Invalid or missing user ID in token");
+        }
+        return userId;
+    }
+
+    /// <summary>
+    /// Check if the current user is an admin
+    /// </summary>
+    private bool IsAdmin()
+    {
+        return User.IsInRole("Admin");
+    }
+
+    /// <summary>
+    /// Check if the current user can access a bet
+    /// Admins and Support can access any bet, regular users can only access their own
+    /// </summary>
+    private bool CanAccessBet(Guid betUserId)
+    {
+        if (User.IsInRole("Support") || User.IsInRole("Admin"))
+            return true;
+
+        var currentUserId = GetCurrentUserId();
+        return currentUserId == betUserId;
     }
 }

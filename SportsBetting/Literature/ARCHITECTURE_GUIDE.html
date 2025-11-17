@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportsBetting Platform - Architecture Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: #2d3748;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #667eea;
+        }
+
+        main {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #2d3748;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: #e53e3e;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .box-success {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .box-warning {
+            border-left-color: #ed8936;
+            background: #fffaf0;
+        }
+
+        .box-info {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .box-danger {
+            border-left-color: #f56565;
+            background: #fff5f5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .diagram {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .property-table {
+            margin: 15px 0;
+        }
+
+        .property-table td:first-child {
+            font-weight: 600;
+            color: #667eea;
+            width: 200px;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge-primary { background: #667eea; color: white; }
+        .badge-success { background: #48bb78; color: white; }
+        .badge-warning { background: #ed8936; color: white; }
+        .badge-info { background: #4299e1; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SportsBetting Platform</h1>
+            <p>Comprehensive Architecture & Implementation Guide</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">A production-ready sports betting platform built with ASP.NET Core 9, EF Core 9, and PostgreSQL</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#tech-stack">Tech Stack</a></li>
+                <li><a href="#domain">Domain Layer</a></li>
+                <li><a href="#data">Data Layer</a></li>
+                <li><a href="#api">API Layer</a></li>
+                <li><a href="#concurrency">Concurrency</a></li>
+                <li><a href="#testing">Testing</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- OVERVIEW SECTION -->
+            <section id="overview">
+                <h2>1. Project Overview</h2>
+
+                <p>This is a comprehensive sports betting platform that allows users to place bets on sporting events, manage their wallets, and track betting outcomes. The system is designed with financial transaction integrity as the highest priority, implementing robust concurrency control and comprehensive audit trails.</p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>User Wallet Management:</strong> Secure deposits, withdrawals, and balance tracking with multi-currency support</li>
+                    <li><strong>Betting Engine:</strong> Support for single bets and parlays with automatic odds calculation</li>
+                    <li><strong>Line Locks:</strong> Users can lock in favorable odds before placing bets</li>
+                    <li><strong>Event Management:</strong> Comprehensive sports event, league, team, and market modeling</li>
+                    <li><strong>Settlement System:</strong> Automated bet settlement with support for wins, losses, pushes, and voids</li>
+                    <li><strong>Transaction Auditing:</strong> Complete financial audit trail for regulatory compliance</li>
+                    <li><strong>Concurrency Control:</strong> PostgreSQL xmin-based optimistic locking prevents double-spend attacks</li>
+                </ul>
+
+                <div class="box box-success">
+                    <h4>Production-Ready Features</h4>
+                    <ul>
+                        <li>Database-level constraints prevent invalid data</li>
+                        <li>Retry logic with exponential backoff for concurrent operations</li>
+                        <li>45 comprehensive integration tests (100% passing)</li>
+                        <li>Type-safe Money and Odds value objects prevent calculation errors</li>
+                        <li>Domain-driven design ensures business logic encapsulation</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ARCHITECTURE SECTION -->
+            <section id="architecture">
+                <h2>2. Architecture</h2>
+
+                <p>The project follows <strong>Domain-Driven Design (DDD)</strong> principles combined with <strong>Clean Architecture</strong>. This creates clear separation of concerns and makes the codebase maintainable and testable.</p>
+
+                <h3>Layer Structure</h3>
+
+                <div class="diagram">
+                    <pre style="text-align: left; background: #f7fafc; color: #2d3748; border: none;">
+┌─────────────────────────────────────────────────────┐
+│           API Layer (SportsBetting.API)             │
+│   Controllers, DTOs, HTTP Endpoints, Middleware    │
+└────────────────────┬────────────────────────────────┘
+                     │ depends on
+┌────────────────────▼────────────────────────────────┐
+│      Services Layer (SportsBetting.Services)        │
+│     Application Logic, Orchestration, Use Cases     │
+└────────────────────┬────────────────────────────────┘
+                     │ depends on
+┌────────────────────▼────────────────────────────────┐
+│       Data Layer (SportsBetting.Data)               │
+│   EF Core, DbContext, Configurations, Migrations    │
+└────────────────────┬────────────────────────────────┘
+                     │ depends on
+┌────────────────────▼────────────────────────────────┐
+│       Domain Layer (SportsBetting.Domain)           │
+│   Entities, Value Objects, Domain Services, Enums   │
+│        *** NO DEPENDENCIES ON OTHER LAYERS ***      │
+└─────────────────────────────────────────────────────┘</pre>
+                </div>
+
+                <h3>Why This Architecture?</h3>
+
+                <h4>Domain Layer (Core Business Logic)</h4>
+                <p>The domain layer contains all business entities and rules. It has <strong>zero dependencies</strong> on infrastructure concerns like databases or web frameworks. This means:</p>
+                <ul>
+                    <li>Business logic can be tested without a database</li>
+                    <li>We can change databases (PostgreSQL → SQL Server) without touching domain code</li>
+                    <li>All validation and invariants are enforced in the domain</li>
+                </ul>
+
+                <div class="box box-info">
+                    <strong>Example:</strong> The <code>Wallet.Withdraw()</code> method checks if there are sufficient funds. This business rule lives in the domain, not in a controller or database procedure. No matter how you try to withdraw money (API, console app, background job), the rule is always enforced.
+                </div>
+
+                <h4>Data Layer (Persistence)</h4>
+                <p>Handles all database interactions using Entity Framework Core. Key responsibilities:</p>
+                <ul>
+                    <li>Mapping domain entities to database tables</li>
+                    <li>Configuring indexes, constraints, and relationships</li>
+                    <li>Managing database migrations</li>
+                    <li>Implementing the repository pattern (via DbContext)</li>
+                </ul>
+
+                <h4>API Layer (Presentation)</h4>
+                <p>Exposes HTTP endpoints for client applications. Responsibilities:</p>
+                <ul>
+                    <li>Receiving HTTP requests and returning responses</li>
+                    <li>Input validation and transformation (DTOs)</li>
+                    <li>Error handling and logging</li>
+                    <li>Orchestrating domain services and data access</li>
+                </ul>
+
+                <h3>Project Dependencies</h3>
+                <table>
+                    <tr>
+                        <th>Project</th>
+                        <th>References</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>SportsBetting.Domain</strong></td>
+                        <td><em>None</em></td>
+                        <td>Pure business logic, no external dependencies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SportsBetting.Data</strong></td>
+                        <td>Domain, EF Core</td>
+                        <td>Persistence and database mapping</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SportsBetting.Services</strong></td>
+                        <td>Domain</td>
+                        <td>Application-level orchestration</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SportsBetting.API</strong></td>
+                        <td>Data, Services, Domain</td>
+                        <td>HTTP API endpoints</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SportsBetting.Data.Tests</strong></td>
+                        <td>Data, API, Domain</td>
+                        <td>Integration and unit tests</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- TECH STACK SECTION -->
+            <section id="tech-stack">
+                <h2>3. Technology Stack</h2>
+
+                <table>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Version</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><strong>.NET / C#</strong></td>
+                        <td>9.0</td>
+                        <td>Application framework and programming language</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ASP.NET Core</strong></td>
+                        <td>9.0</td>
+                        <td>Web API framework for HTTP endpoints</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Entity Framework Core</strong></td>
+                        <td>9.0</td>
+                        <td>ORM for database access and migrations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PostgreSQL</strong></td>
+                        <td>16+</td>
+                        <td>Production database with advanced concurrency features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SQLite</strong></td>
+                        <td>Latest</td>
+                        <td>In-memory database for fast unit testing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>xUnit</strong></td>
+                        <td>Latest</td>
+                        <td>Testing framework</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Npgsql</strong></td>
+                        <td>Latest</td>
+                        <td>PostgreSQL driver for .NET</td>
+                    </tr>
+                </table>
+
+                <h3>Why PostgreSQL?</h3>
+                <p>PostgreSQL was chosen over SQL Server or MySQL for several critical features:</p>
+                <ul>
+                    <li><strong>xmin system column:</strong> Built-in optimistic concurrency token that auto-increments on every row update</li>
+                    <li><strong>ACID compliance:</strong> Strong transaction guarantees for financial operations</li>
+                    <li><strong>Check constraints:</strong> Database-level validation prevents invalid data</li>
+                    <li><strong>Performance:</strong> Excellent concurrent write performance under heavy load</li>
+                    <li><strong>Cost:</strong> Open-source with no licensing fees</li>
+                </ul>
+            </section>
+
+            <!-- DOMAIN LAYER SECTION -->
+            <section id="domain">
+                <h2>4. Domain Layer Deep Dive</h2>
+
+                <p>The domain layer represents the <strong>heart of the application</strong>. It contains all business entities, value objects, and domain logic. Understanding this layer is crucial to understanding how the system works.</p>
+
+                <h3>Core Entities</h3>
+
+                <h4>4.1 User Entity</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/Entities/User.cs</code></p>
+                    <p><strong>Purpose:</strong> Represents a user account in the betting system</p>
+                </div>
+
+                <table class="property-table">
+                    <tr>
+                        <td>Id</td>
+                        <td>Guid - Unique identifier</td>
+                    </tr>
+                    <tr>
+                        <td>Username</td>
+                        <td>string - 3-50 characters, validated on construction</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>string - Validated format, stored lowercase</td>
+                    </tr>
+                    <tr>
+                        <td>PasswordHash</td>
+                        <td>string - Hashed password (never plain text)</td>
+                    </tr>
+                    <tr>
+                        <td>Currency</td>
+                        <td>string - 3-letter ISO code (USD, EUR, GBP, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>UserStatus enum - Active, Suspended, or Closed</td>
+                    </tr>
+                    <tr>
+                        <td>Wallet</td>
+                        <td>Wallet? - One-to-one navigation property</td>
+                    </tr>
+                </table>
+
+                <p><strong>Key Methods:</strong></p>
+                <ul>
+                    <li><code>UpdateEmail(string)</code> - Change email with validation</li>
+                    <li><code>UpdatePasswordHash(string)</code> - Update password hash</li>
+                    <li><code>RecordLogin()</code> - Track last login time</li>
+                    <li><code>Suspend() / Reactivate() / Close()</code> - Account status management</li>
+                </ul>
+
+                <div class="box box-warning">
+                    <strong>Important:</strong> The User constructor validates all inputs. Invalid data cannot create a User object. This is an example of the <strong>Always Valid</strong> pattern - domain objects are never in an invalid state.
+                </div>
+
+                <h4>4.2 Wallet Entity</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/Entities/Wallet.cs</code></p>
+                    <p><strong>Purpose:</strong> Manages user's betting balance and tracks lifetime statistics</p>
+                </div>
+
+                <table class="property-table">
+                    <tr>
+                        <td>Balance</td>
+                        <td>Money - Current available funds</td>
+                    </tr>
+                    <tr>
+                        <td>TotalDeposited</td>
+                        <td>Money - Lifetime total deposited (never decreases)</td>
+                    </tr>
+                    <tr>
+                        <td>TotalWithdrawn</td>
+                        <td>Money - Lifetime total withdrawn</td>
+                    </tr>
+                    <tr>
+                        <td>TotalBet</td>
+                        <td>Money - Lifetime stakes placed</td>
+                    </tr>
+                    <tr>
+                        <td>TotalWon</td>
+                        <td>Money - Lifetime winnings received</td>
+                    </tr>
+                    <tr>
+                        <td>RowVersion</td>
+                        <td>uint? - Concurrency token (maps to PostgreSQL xmin)</td>
+                    </tr>
+                </table>
+
+                <p><strong>Public Methods (Business Operations):</strong></p>
+                <ul>
+                    <li><code>Deposit(Money)</code> - Add funds to wallet</li>
+                    <li><code>Withdraw(Money)</code> - Remove funds (throws if insufficient)</li>
+                    <li><code>HasSufficientBalance(Money)</code> - Check if withdrawal/bet is possible</li>
+                </ul>
+
+                <p><strong>Internal Methods (Called by other domain entities):</strong></p>
+                <ul>
+                    <li><code>DeductStake(Money)</code> - Called by Bet when placing a wager</li>
+                    <li><code>CreditPayout(Money)</code> - Called when bet wins</li>
+                    <li><code>RefundStake(Money)</code> - Called for void/push bets</li>
+                </ul>
+
+                <p><strong>Computed Properties:</strong></p>
+                <ul>
+                    <li><code>NetProfitLoss</code> - TotalWon - TotalBet (can be negative)</li>
+                    <li><code>ROI</code> - Return on Investment percentage</li>
+                </ul>
+
+                <div class="box box-info">
+                    <strong>Design Decision - Internal Methods:</strong> Notice that <code>DeductStake()</code> is marked <code>internal</code>. This prevents external code from directly deducting from a wallet. Only the <code>Bet</code> entity (in the same assembly) can call this method. This enforces the business rule: "Stakes can only be deducted when placing a valid bet."
+                </div>
+
+                <h4>4.3 Transaction Entity</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/Entities/Transaction.cs</code></p>
+                    <p><strong>Purpose:</strong> Immutable audit record of every wallet operation</p>
+                </div>
+
+                <p>Every single change to a wallet balance creates a Transaction record. This provides a complete audit trail for regulatory compliance and debugging.</p>
+
+                <table class="property-table">
+                    <tr>
+                        <td>Type</td>
+                        <td>Deposit, Withdrawal, BetPlaced, BetPayout, BetRefund, Adjustment</td>
+                    </tr>
+                    <tr>
+                        <td>Amount</td>
+                        <td>Money - Transaction amount (always positive)</td>
+                    </tr>
+                    <tr>
+                        <td>BalanceBefore</td>
+                        <td>Money - Wallet balance before transaction</td>
+                    </tr>
+                    <tr>
+                        <td>BalanceAfter</td>
+                        <td>Money - Wallet balance after transaction</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>Pending, Completed, Failed</td>
+                    </tr>
+                    <tr>
+                        <td>ReferenceId</td>
+                        <td>Guid? - Link to related Bet (if applicable)</td>
+                    </tr>
+                </table>
+
+                <div class="box box-success">
+                    <strong>Audit Trail Example:</strong> If you deposit $100, withdraw $20, and place a $50 bet, you'll have 3 Transaction records showing the exact balance progression: $0 → $100 → $80 → $30. This makes financial reconciliation and debugging trivial.
+                </div>
+
+                <h4>4.4 Bet Entity</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/Entities/Bet.cs</code></p>
+                    <p><strong>Purpose:</strong> Represents a betting ticket with one or more selections</p>
+                </div>
+
+                <table class="property-table">
+                    <tr>
+                        <td>TicketNumber</td>
+                        <td>string - Human-readable identifier (e.g., "BET20251114153045XXXX")</td>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td>Single or Parlay</td>
+                    </tr>
+                    <tr>
+                        <td>Stake</td>
+                        <td>Money - Amount wagered</td>
+                    </tr>
+                    <tr>
+                        <td>CombinedOdds</td>
+                        <td>Odds - For parlays, product of all selection odds</td>
+                    </tr>
+                    <tr>
+                        <td>PotentialPayout</td>
+                        <td>Money - What you win if bet hits (includes stake)</td>
+                    </tr>
+                    <tr>
+                        <td>ActualPayout</td>
+                        <td>Money? - Actual payout after settlement (null until settled)</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>Pending, Won, Lost, Pushed, Void, Cancelled, PendingAcceptance</td>
+                    </tr>
+                    <tr>
+                        <td>Selections</td>
+                        <td>List&lt;BetSelection&gt; - Individual picks in this bet</td>
+                    </tr>
+                </table>
+
+                <p><strong>Factory Methods:</strong></p>
+                <pre><code>// Create a single bet
+Bet.CreateSingle(user, stake: $100, event, market, outcome);
+
+// Create a parlay (multiple selections)
+Bet.CreateParlay(user, stake: $50,
+    (event1, market1, outcome1),
+    (event2, market2, outcome2),
+    (event3, market3, outcome3)
+);</code></pre>
+
+                <p><strong>Settlement Logic:</strong></p>
+                <ul>
+                    <li><strong>Single Bet:</strong> Win = full payout, Loss = $0, Void/Push = stake refunded</li>
+                    <li><strong>Parlay:</strong> All legs must win. If any leg loses, entire bet loses. Voided legs are removed and odds recalculated.</li>
+                </ul>
+
+                <div class="box box-warning">
+                    <strong>Parlay Example:</strong> You bet $10 on a 3-leg parlay with odds 2.0, 1.5, 2.5. Combined odds = 2.0 × 1.5 × 2.5 = 7.5, potential payout = $75. But if one leg voids, you only have 2 legs now: 2.0 × 1.5 = 3.0, new payout = $30. This is standard sportsbook behavior.
+                </div>
+
+                <h4>4.5 Event, Market, Outcome</h4>
+                <p>These entities model the sports betting hierarchy:</p>
+
+                <div class="diagram">
+                    <pre style="text-align: left; background: #f7fafc; color: #2d3748; border: none;">
+<strong>Event:</strong> "Lakers vs Celtics" @ 7:00 PM
+   │
+   ├─ <strong>Market:</strong> "Moneyline" (Who wins?)
+   │     ├─ <strong>Outcome:</strong> "Lakers" @ 1.85 odds
+   │     └─ <strong>Outcome:</strong> "Celtics" @ 2.10 odds
+   │
+   ├─ <strong>Market:</strong> "Point Spread -5.5"
+   │     ├─ <strong>Outcome:</strong> "Lakers -5.5" @ 1.95 odds
+   │     └─ <strong>Outcome:</strong> "Celtics +5.5" @ 1.95 odds
+   │
+   └─ <strong>Market:</strong> "Total Points Over/Under 215.5"
+         ├─ <strong>Outcome:</strong> "Over 215.5" @ 1.90 odds
+         └─ <strong>Outcome:</strong> "Under 215.5" @ 2.00 odds</pre>
+                </div>
+
+                <h3>Value Objects</h3>
+
+                <h4>4.6 Money Value Object</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/ValueObjects/Money.cs</code></p>
+                    <p><strong>Purpose:</strong> Type-safe representation of monetary values</p>
+                </div>
+
+                <p><strong>Why use a Money struct instead of just decimal?</strong></p>
+                <ul>
+                    <li><strong>Type Safety:</strong> Can't accidentally add USD to EUR</li>
+                    <li><strong>Validation:</strong> Negative amounts are impossible to construct</li>
+                    <li><strong>Immutability:</strong> Once created, values can't be changed</li>
+                    <li><strong>Rich Behavior:</strong> Built-in operators (+, -, *, >, <, ==)</li>
+                </ul>
+
+                <pre><code>// This compiles:
+decimal balance = 100;
+decimal euros = 50;
+decimal result = balance + euros; // Oops! Mixed currencies!
+
+// This won't compile:
+Money balance = new Money(100, "USD");
+Money euros = new Money(50, "EUR");
+Money result = balance + euros; // Compiler error! Different currencies!</code></pre>
+
+                <h4>4.7 Odds Value Object</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/ValueObjects/Odds.cs</code></p>
+                    <p><strong>Purpose:</strong> Represents betting odds with automatic payout calculation</p>
+                </div>
+
+                <p>Stores odds in decimal format internally (easier to calculate). Supports conversion to/from American odds format:</p>
+
+                <table>
+                    <tr>
+                        <th>Decimal Odds</th>
+                        <th>American Odds</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td>2.0</td>
+                        <td>+100</td>
+                        <td>Even money - bet $100, win $100 profit</td>
+                    </tr>
+                    <tr>
+                        <td>3.0</td>
+                        <td>+200</td>
+                        <td>Underdog - bet $100, win $200 profit</td>
+                    </tr>
+                    <tr>
+                        <td>1.67</td>
+                        <td>-150</td>
+                        <td>Favorite - bet $150, win $100 profit</td>
+                    </tr>
+                </table>
+
+                <pre><code>var odds = new Odds(2.5m); // Decimal odds
+var stake = new Money(100, "USD");
+Money payout = odds.CalculatePayout(stake); // $250 (includes stake)
+Money profit = odds.CalculateProfit(stake); // $150 (profit only)</code></pre>
+
+                <h3>Domain Services</h3>
+
+                <h4>4.8 WalletService</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Domain/Services/WalletService.cs</code></p>
+                    <p><strong>Purpose:</strong> Orchestrates wallet operations with transaction logging</p>
+                </div>
+
+                <p><strong>Why have a service if Wallet already has methods?</strong></p>
+                <p>The <code>WalletService</code> coordinates operations that span multiple entities. When you deposit money, TWO things must happen:</p>
+                <ol>
+                    <li>Update the Wallet balance</li>
+                    <li>Create a Transaction audit record</li>
+                </ol>
+
+                <p>The service ensures both happen together:</p>
+
+                <pre><code>public Transaction Deposit(User user, Money amount, string description)
+{
+    var balanceBefore = user.Wallet.Balance;
+    user.Wallet.Deposit(amount);        // Step 1: Update wallet
+    var balanceAfter = user.Wallet.Balance;
+
+    var transaction = new Transaction(  // Step 2: Create audit record
+        user, TransactionType.Deposit,
+        amount, balanceBefore, balanceAfter, description
+    );
+
+    return transaction;
+}</code></pre>
+            </section>
+
+            <!-- DATA LAYER SECTION -->
+            <section id="data">
+                <h2>5. Data Layer Deep Dive</h2>
+
+                <p>The data layer handles all database interactions using Entity Framework Core. It translates domain objects into database tables and vice versa.</p>
+
+                <h3>Entity Configurations</h3>
+
+                <h4>5.1 WalletConfiguration</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data/Configurations/WalletConfiguration.cs</code></p>
+                    <p><strong>Purpose:</strong> Maps Wallet entity to database table with advanced PostgreSQL features</p>
+                </div>
+
+                <p><strong>Key Configuration Decisions:</strong></p>
+
+                <h5>xmin Concurrency Token</h5>
+                <pre><code>builder.Property(w => w.RowVersion)
+    .HasColumnType("xid")           // PostgreSQL transaction ID type
+    .HasColumnName("xmin")          // Map to system column
+    .ValueGeneratedOnAddOrUpdate()  // Auto-updated by database
+    .IsConcurrencyToken();          // Used for concurrency checks</code></pre>
+
+                <p><strong>What is xmin?</strong> PostgreSQL automatically maintains a hidden <code>xmin</code> column on every row. It contains the transaction ID that created or last modified the row. Every time you update a row, PostgreSQL increments xmin. We use this as a concurrency token for free - no need to maintain our own version column!</p>
+
+                <h5>Complex Types for Money</h5>
+                <p>The <code>Money</code> value object has two properties: <code>Amount</code> and <code>Currency</code>. We map these as complex types rather than owned entities:</p>
+
+                <pre><code>builder.ComplexProperty(w => w.Balance, moneyBuilder =>
+{
+    moneyBuilder.Property(m => m.Amount)
+        .HasColumnName("Balance")
+        .HasPrecision(18, 2);  // 18 digits total, 2 after decimal
+
+    moneyBuilder.Property(m => m.Currency)
+        .HasColumnName("Currency")
+        .HasMaxLength(3)
+        .IsFixedLength();  // Always exactly 3 chars (USD, EUR, etc.)
+});</code></pre>
+
+                <p>This creates columns directly in the Wallets table instead of a separate Money table. More efficient for frequently accessed data.</p>
+
+                <h5>Database Constraints</h5>
+                <p>We add CHECK constraints to enforce business rules at the database level:</p>
+
+                <pre><code>builder.ToTable(t =>
+{
+    t.HasCheckConstraint("CK_Wallets_Balance_NonNegative",
+        "\"Balance\" >= 0");
+    t.HasCheckConstraint("CK_Wallets_TotalDeposited_NonNegative",
+        "\"TotalDeposited\" >= 0");
+    // ... etc
+});</code></pre>
+
+                <div class="box box-danger">
+                    <strong>Defense in Depth:</strong> Even if application code has a bug that tries to set a negative balance, the database will reject it. This prevents data corruption even during bugs or manual SQL updates.
+                </div>
+
+                <h3>Migrations</h3>
+
+                <p>EF Core migrations track database schema changes over time. Key migrations in this project:</p>
+
+                <table>
+                    <tr>
+                        <th>Migration</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>InitialCreate</td>
+                        <td>Creates all tables, indexes, and relationships</td>
+                    </tr>
+                    <tr>
+                        <td>UseXminForRowVersion</td>
+                        <td>Drops old RowVersion column, uses xmin instead</td>
+                    </tr>
+                    <tr>
+                        <td>AddDatabaseConstraints</td>
+                        <td>Adds CHECK constraints for data validation</td>
+                    </tr>
+                    <tr>
+                        <td>MakeRowVersionNullable</td>
+                        <td>Changes CLR type to uint? for SQLite test compatibility</td>
+                    </tr>
+                </table>
+
+                <h3>DbContext</h3>
+
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data/SportsBettingDbContext.cs</code></p>
+                    <p><strong>Purpose:</strong> Main database context, entry point for all queries</p>
+                </div>
+
+                <p>The DbContext contains DbSet properties for each entity:</p>
+
+                <pre><code>public class SportsBettingDbContext : DbContext
+{
+    public DbSet&lt;User&gt; Users { get; set; }
+    public DbSet&lt;Wallet&gt; Wallets { get; set; }
+    public DbSet&lt;Transaction&gt; Transactions { get; set; }
+    public DbSet&lt;Bet&gt; Bets { get; set; }
+    public DbSet&lt;Event&gt; Events { get; set; }
+    // ... etc
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Apply all configurations
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(SportsBettingDbContext).Assembly
+        );
+    }
+}</code></pre>
+            </section>
+
+            <!-- API LAYER SECTION -->
+            <section id="api">
+                <h2>6. API Layer Deep Dive</h2>
+
+                <p>The API layer exposes HTTP endpoints for client applications. Built with ASP.NET Core minimal overhead.</p>
+
+                <h3>Controllers</h3>
+
+                <h4>6.1 WalletsController</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.API/Controllers/WalletsController.cs</code></p>
+                    <p><strong>Endpoints:</strong></p>
+                    <ul>
+                        <li><code>GET /api/wallets/{id}</code> - Get wallet by ID</li>
+                        <li><code>GET /api/wallets/user/{userId}</code> - Get wallet by user ID</li>
+                        <li><code>POST /api/wallets/{id}/deposit</code> - Deposit funds</li>
+                        <li><code>POST /api/wallets/{id}/withdraw</code> - Withdraw funds</li>
+                        <li><code>GET /api/wallets/{id}/transactions</code> - Get transaction history</li>
+                    </ul>
+                </div>
+
+                <p><strong>Deposit Endpoint Implementation:</strong></p>
+
+                <pre><code>[HttpPost("{id}/deposit")]
+public async Task&lt;ActionResult&lt;TransactionResponse&gt;&gt; Deposit(
+    Guid id,
+    [FromBody] DepositRequest request)
+{
+    // 1. Input validation
+    if (request.Amount <= 0)
+        return BadRequest("Amount must be positive");
+
+    // 2. Retry loop for concurrency conflicts
+    const int maxRetries = 3;
+    for (int retry = 0; retry < maxRetries; retry++)
+    {
+        try
+        {
+            // 3. Load user and wallet (fresh on each retry)
+            var user = await _context.Users
+                .Include(u => u.Wallet)
+                .FirstOrDefaultAsync(u => u.Wallet.Id == id);
+
+            if (user?.Wallet == null)
+                return NotFound("Wallet not found");
+
+            // 4. Execute business logic via service
+            var transaction = _walletService.Deposit(
+                user,
+                new Money(request.Amount, user.Wallet.Balance.Currency),
+                request.Description ?? "Deposit"
+            );
+
+            // 5. Persist changes
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+
+            // 6. Return success response
+            return Ok(MapToResponse(transaction));
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // 7. Handle concurrency conflict
+            _context.ChangeTracker.Clear(); // Detach all entities
+
+            if (retry >= maxRetries - 1)
+                return Conflict("Unable to process deposit");
+
+            await Task.Delay(50 * (retry + 1)); // Exponential backoff
+        }
+    }
+}</code></pre>
+
+                <h3>DTOs (Data Transfer Objects)</h3>
+
+                <p>DTOs are simple classes used for API requests and responses. They differ from domain entities in important ways:</p>
+
+                <table>
+                    <tr>
+                        <th>Domain Entity</th>
+                        <th>DTO</th>
+                    </tr>
+                    <tr>
+                        <td>Has business logic and validation</td>
+                        <td>Just data, no logic</td>
+                    </tr>
+                    <tr>
+                        <td>Immutable or controlled mutation</td>
+                        <td>Simple properties</td>
+                    </tr>
+                    <tr>
+                        <td>Rich types (Money, Odds)</td>
+                        <td>Primitive types (decimal, string)</td>
+                    </tr>
+                    <tr>
+                        <td>Navigation properties (relationships)</td>
+                        <td>Flat structure, IDs only</td>
+                    </tr>
+                </table>
+
+                <p><strong>Example DTO:</strong></p>
+
+                <pre><code>public record WalletResponse(
+    Guid Id,
+    Guid UserId,
+    decimal Balance,
+    string Currency,
+    decimal TotalDeposited,
+    decimal TotalWithdrawn,
+    decimal TotalBet,
+    decimal TotalWon,
+    decimal NetProfitLoss,
+    DateTime LastUpdatedAt
+);</code></pre>
+
+                <div class="box box-info">
+                    <strong>Why use records?</strong> C# 9+ records provide immutability, value equality, and concise syntax. Perfect for DTOs that should never change after creation.
+                </div>
+            </section>
+
+            <!-- CONCURRENCY SECTION -->
+            <section id="concurrency">
+                <h2>7. Concurrency Control</h2>
+
+                <p>This is one of the most critical aspects of a betting platform. Without proper concurrency control, users could exploit race conditions to double-spend or place bets without sufficient funds.</p>
+
+                <h3>The Problem</h3>
+
+                <p>Imagine this scenario without concurrency control:</p>
+
+                <div class="diagram">
+                    <pre style="text-align: left; background: #fff5f5; color: #c53030; border-left: 4px solid #f56565;">
+User has $100 balance
+
+Thread 1 (Withdrawal):           Thread 2 (Bet):
+1. Read balance: $100            1. Read balance: $100
+2. Check: $100 >= $80? YES       2. Check: $100 >= $50? YES
+3. New balance: $100 - $80 = $20 3. New balance: $100 - $50 = $50
+4. Save balance: $20             4. Save balance: $50
+
+<strong>RESULT: Final balance is $50 (last write wins!)</strong>
+<strong>Expected: $100 - $80 - $50 = -$30 (should fail!)</strong>
+<strong>User just stole $30 from the system!</strong></pre>
+                </div>
+
+                <h3>The Solution: Optimistic Concurrency Control</h3>
+
+                <p>We use <strong>optimistic locking</strong> with PostgreSQL's <code>xmin</code> column:</p>
+
+                <div class="diagram">
+                    <pre style="text-align: left; background: #f0fff4; color: #22543d; border-left: 4px solid #48bb78;">
+User has $100 balance, xmin = 1234
+
+Thread 1 (Withdrawal):           Thread 2 (Bet):
+1. Read balance: $100, xmin=1234 1. Read balance: $100, xmin=1234
+2. Check: $100 >= $80? YES       2. Check: $100 >= $50? YES
+3. New balance: $20              3. New balance: $50
+4. UPDATE ... WHERE xmin=1234    4. UPDATE ... WHERE xmin=1234
+   ✓ Success! xmin becomes 1235     ✗ FAILS! xmin is now 1235, not 1234
+
+Thread 2 gets DbUpdateConcurrencyException
+→ Retry: Read balance again (now $20)
+→ Check: $20 >= $50? NO
+→ Return error: Insufficient funds
+
+<strong>RESULT: User has $20, one operation succeeded, one failed (correct!)</strong></pre>
+                </div>
+
+                <h3>Implementation Details</h3>
+
+                <h4>Step 1: Map RowVersion to xmin</h4>
+                <pre><code>// WalletConfiguration.cs
+builder.Property(w => w.RowVersion)
+    .HasColumnName("xmin")
+    .IsConcurrencyToken();</code></pre>
+
+                <h4>Step 2: Retry Logic in Controllers</h4>
+                <pre><code>const int maxRetries = 3;
+for (int retry = 0; retry < maxRetries; retry++)
+{
+    try
+    {
+        // Load fresh data on each retry
+        var wallet = await LoadWallet(id);
+        wallet.Withdraw(amount);
+        await SaveChanges();
+        return Ok();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        ClearTrackedEntities();
+        if (retry >= maxRetries - 1)
+            return Conflict();
+        await Task.Delay(50 * (retry + 1)); // 50ms, 100ms, 150ms
+    }
+}</code></pre>
+
+                <h4>Step 3: Entity Detachment</h4>
+                <p>When a concurrency conflict occurs, we must detach all tracked entities before retrying:</p>
+
+                <pre><code>foreach (var entry in _context.ChangeTracker.Entries())
+{
+    entry.State = EntityState.Detached;
+}</code></pre>
+
+                <p><strong>Why?</strong> EF Core caches entities. If we don't detach, the retry will use stale data from the cache instead of fresh data from the database.</p>
+
+                <h3>Exponential Backoff</h3>
+
+                <p>We use increasing delays between retries:</p>
+                <ul>
+                    <li>Retry 1: 50ms delay</li>
+                    <li>Retry 2: 100ms delay</li>
+                    <li>Retry 3: 150ms delay</li>
+                </ul>
+
+                <p><strong>Why?</strong> If two threads are constantly colliding, waiting longer gives one a better chance to complete first. Without delays, they could fight forever.</p>
+
+                <h3>Why Nullable RowVersion?</h3>
+
+                <p>You might notice <code>RowVersion</code> is <code>uint?</code> instead of <code>uint</code>. This is for test compatibility:</p>
+
+                <ul>
+                    <li><strong>PostgreSQL:</strong> Has xmin, works perfectly</li>
+                    <li><strong>SQLite:</strong> No xmin system column, RowVersion stays null</li>
+                </ul>
+
+                <p>Our integration tests use both databases. PostgreSQL tests verify concurrency control works. SQLite tests run faster for non-concurrency scenarios.</p>
+            </section>
+
+            <!-- TESTING SECTION -->
+            <section id="testing">
+                <h2>8. Testing Strategy</h2>
+
+                <p>The project has comprehensive test coverage with 45 passing integration tests. Tests are organized by concern.</p>
+
+                <h3>Test Categories</h3>
+
+                <h4>8.1 Concurrency Tests</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data.Tests/ConcurrencyTests.cs</code></p>
+                    <p><strong>Purpose:</strong> Verify optimistic locking prevents race conditions</p>
+                </div>
+
+                <p><strong>Key Tests:</strong></p>
+                <ul>
+                    <li><code>ConcurrentWithdrawals_ShouldThrowConcurrencyException()</code> - Two simultaneous withdrawals, one fails</li>
+                    <li><code>ConcurrentBetPlacements_ShouldPreventDoubleDeduction()</code> - Can't place two bets without enough funds</li>
+                    <li><code>ConcurrentDeposits_ShouldAllSucceedWithRetry()</code> - Multiple deposits all succeed via retry logic</li>
+                    <li><code>ConcurrentBetSettlement_AndNewBet_ShouldBeHandledCorrectly()</code> - Betting and settlement can happen simultaneously</li>
+                </ul>
+
+                <h4>8.2 Database Constraint Tests</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data.Tests/DatabaseConstraintTests.cs</code></p>
+                    <p><strong>Purpose:</strong> Verify database-level validation prevents invalid data</p>
+                </div>
+
+                <p>These tests bypass the application layer entirely, using raw SQL to attempt invalid operations:</p>
+
+                <pre><code>[Fact]
+public async Task WalletBalance_CannotBeNegative_ThrowsException()
+{
+    // Try to set negative balance via SQL
+    var sql = $"UPDATE \"Wallets\" SET \"Balance\" = -100 WHERE \"Id\" = '{walletId}'";
+
+    // Should throw PostgresException with constraint name
+    var ex = await Assert.ThrowsAsync&lt;PostgresException&gt;(
+        () => context.Database.ExecuteSqlRawAsync(sql)
+    );
+
+    Assert.Contains("CK_Wallets_Balance_NonNegative", ex.Message);
+}</code></pre>
+
+                <p><strong>Why test this?</strong> Proves that even if application code has bugs, the database will reject invalid data. Defense in depth.</p>
+
+                <h4>8.3 Retry Exhaustion Tests</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data.Tests/RetryExhaustionTests.cs</code></p>
+                    <p><strong>Purpose:</strong> Test system behavior under extreme contention</p>
+                </div>
+
+                <p><strong>Example Test:</strong></p>
+                <pre><code>[Fact]
+public async Task ExtremeContention_SomeOperationsFail_ButDataRemainsConsistent()
+{
+    // Create wallet with $1000
+    // Launch 20 concurrent $100 withdrawals
+    // Maximum 10 can succeed, rest must fail
+
+    var tasks = Enumerable.Range(0, 20)
+        .Select(_ => TryWithdraw(walletId, 100))
+        .ToArray();
+
+    await Task.WhenAll(tasks);
+
+    var successCount = tasks.Count(t => t.Result == true);
+    Assert.InRange(successCount, 1, 10);
+
+    // Critical: Final balance must be consistent
+    var finalBalance = await GetBalance(walletId);
+    Assert.Equal(1000 - (successCount * 100), finalBalance);
+}</code></pre>
+
+                <h4>8.4 Performance Benchmark Tests</h4>
+                <div class="box">
+                    <p><strong>Location:</strong> <code>SportsBetting.Data.Tests/PerformanceBenchmarkTests.cs</code></p>
+                    <p><strong>Purpose:</strong> Ensure acceptable performance under various loads</p>
+                </div>
+
+                <p><strong>Test Scenarios:</strong></p>
+                <ul>
+                    <li><strong>Low Contention:</strong> 10 operations on different wallets (should complete in &lt;1s)</li>
+                    <li><strong>Medium Contention:</strong> 50 operations on same wallet with retries (should complete in &lt;5s, ≥30% success rate)</li>
+                    <li><strong>High Contention:</strong> 50 concurrent operations (≥10 ops/sec throughput)</li>
+                    <li><strong>Baseline Latency:</strong> Single operations (&lt;100ms average)</li>
+                </ul>
+
+                <h3>Testing Philosophy</h3>
+
+                <div class="box box-success">
+                    <h4>Integration Tests Over Unit Tests</h4>
+                    <p>This project heavily favors integration tests that hit the real database. Why?</p>
+                    <ul>
+                        <li>Domain logic is already tested through entity invariants</li>
+                        <li>Most bugs occur at the database interaction layer</li>
+                        <li>Integration tests catch issues with migrations, constraints, and configurations</li>
+                        <li>They verify the <strong>entire stack</strong> works together</li>
+                    </ul>
+                </div>
+
+                <h3>Test Database Setup</h3>
+
+                <p>PostgreSQL integration tests create a temporary database:</p>
+
+                <pre><code>// 1. Connect to master database
+var masterContext = new SportsBettingDbContext(masterOptions);
+
+// 2. Drop test database if exists from previous run
+await masterContext.Database.ExecuteSqlRawAsync(
+    $"DROP DATABASE IF EXISTS \"{testDatabaseName}\""
+);
+
+// 3. Create fresh test database
+await masterContext.Database.ExecuteSqlRawAsync(
+    $"CREATE DATABASE \"{testDatabaseName}\""
+);
+
+// 4. Run migrations
+var testContext = new SportsBettingDbContext(testOptions);
+await testContext.Database.MigrateAsync();</code></pre>
+
+                <p>This ensures each test run starts with a clean, consistent database state.</p>
+            </section>
+
+            <!-- DESIGN PATTERNS SECTION -->
+            <section id="patterns">
+                <h2>9. Key Design Patterns & Decisions</h2>
+
+                <h3>9.1 Domain-Driven Design (DDD)</h3>
+
+                <p><strong>Entities vs Value Objects</strong></p>
+                <ul>
+                    <li><strong>Entities:</strong> Have identity (Guid ID). Two users with same data are still different users. Examples: User, Wallet, Bet</li>
+                    <li><strong>Value Objects:</strong> Defined by their values only. Two Money(100, "USD") instances are identical. Examples: Money, Odds, Score</li>
+                </ul>
+
+                <h3>9.2 Always Valid Pattern</h3>
+
+                <p>Domain entities cannot be created in an invalid state. All validation happens in constructors:</p>
+
+                <pre><code>public User(string username, string email, ...)
+{
+    if (username.Length < 3)
+        throw new ArgumentException("Username too short");
+
+    if (!IsValidEmail(email))
+        throw new ArgumentException("Invalid email");
+
+    // If we get here, object is valid
+    Username = username;
+    Email = email;
+}</code></pre>
+
+                <p><strong>Benefits:</strong> You never need to check if a User object is valid. If it exists, it's valid. This eliminates defensive programming throughout the codebase.</p>
+
+                <h3>9.3 Internal Methods for Encapsulation</h3>
+
+                <p>Some Wallet methods are marked <code>internal</code>:</p>
+
+                <pre><code>internal void DeductStake(Money stake)
+internal void CreditPayout(Money payout)
+internal void RefundStake(Money stake)</code></pre>
+
+                <p><strong>Why?</strong> These methods should only be called by specific domain entities (like Bet). Making them internal prevents external code from manipulating wallets incorrectly.</p>
+
+                <h3>9.4 Factory Methods</h3>
+
+                <p>Complex entity creation uses static factory methods instead of constructors:</p>
+
+                <pre><code>// Clear, self-documenting
+var bet = Bet.CreateSingle(user, stake, event, market, outcome);
+
+// vs confusing constructor with many parameters
+var bet = new Bet(user, BetType.Single, stake,
+    new List&lt;BetSelection&gt; { new BetSelection(...) });</code></pre>
+
+                <h3>9.5 Immutability Where Possible</h3>
+
+                <p>Value objects are readonly structs. Once created, they cannot change:</p>
+
+                <pre><code>public readonly struct Money
+{
+    public decimal Amount { get; }  // No setter!
+    public string Currency { get; }
+}</code></pre>
+
+                <p><strong>Why?</strong> Prevents bugs where shared Money instances get modified unexpectedly. Also enables safe concurrency.</p>
+
+                <h3>9.6 Repository Pattern via DbContext</h3>
+
+                <p>We don't have explicit repository classes. The DbContext <strong>is</strong> the repository:</p>
+
+                <pre><code>// Instead of UserRepository.GetById(id)
+var user = await _context.Users.FindAsync(id);
+
+// Instead of UserRepository.GetByEmail(email)
+var user = await _context.Users
+    .FirstOrDefaultAsync(u => u.Email == email);</code></pre>
+
+                <p><strong>Why?</strong> Modern EF Core is already a repository. Adding another layer just creates indirection without benefit.</p>
+            </section>
+
+            <!-- FUTURE ENHANCEMENTS SECTION -->
+            <section id="future">
+                <h2>10. What's Next: Phase 2 - Authentication</h2>
+
+                <p>The current system has <strong>no authentication</strong>. Any client can access any wallet if they know the ID. This is obviously unacceptable for production.</p>
+
+                <h3>Planned Authentication Features</h3>
+
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Technology</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>Password Hashing</td>
+                        <td>BCrypt / PBKDF2</td>
+                        <td>Securely store passwords (never plain text!)</td>
+                    </tr>
+                    <tr>
+                        <td>Login Endpoint</td>
+                        <td>POST /api/auth/login</td>
+                        <td>Validate credentials, return JWT token</td>
+                    </tr>
+                    <tr>
+                        <td>Register Endpoint</td>
+                        <td>POST /api/auth/register</td>
+                        <td>Create new user accounts</td>
+                    </tr>
+                    <tr>
+                        <td>JWT Tokens</td>
+                        <td>JWT Bearer Authentication</td>
+                        <td>Stateless authentication for API requests</td>
+                    </tr>
+                    <tr>
+                        <td>Authorization</td>
+                        <td>[Authorize] attributes</td>
+                        <td>Ensure users can only access their own data</td>
+                    </tr>
+                </table>
+
+                <h3>How JWT Will Work</h3>
+
+                <div class="diagram">
+                    <pre style="text-align: left; background: #f7fafc; color: #2d3748; border: none;">
+1. User Registration:
+   POST /api/auth/register
+   { "username": "john", "email": "john@example.com", "password": "secret123" }
+
+   Server:
+   - Validates input
+   - Hashes password with BCrypt
+   - Creates User entity with hashed password
+   - Creates Wallet for user
+   - Returns success
+
+2. User Login:
+   POST /api/auth/login
+   { "username": "john", "password": "secret123" }
+
+   Server:
+   - Finds user by username
+   - Verifies password hash matches
+   - Generates JWT token containing { userId, username, expiresAt }
+   - Signs token with secret key
+   - Returns: { "token": "eyJhbGc...", "expiresAt": "..." }
+
+3. Authenticated Request:
+   GET /api/wallets/user/{userId}
+   Headers: { "Authorization": "Bearer eyJhbGc..." }
+
+   Server:
+   - Validates JWT signature
+   - Extracts userId from token
+   - Checks if requested userId matches token userId
+   - If yes: Return wallet data
+   - If no: Return 403 Forbidden</pre>
+                </div>
+
+                <h3>Security Improvements Needed</h3>
+
+                <ul>
+                    <li><strong>Password Requirements:</strong> Minimum length, complexity rules</li>
+                    <li><strong>Rate Limiting:</strong> Prevent brute-force login attacks</li>
+                    <li><strong>Email Verification:</strong> Confirm email addresses are real</li>
+                    <li><strong>Token Refresh:</strong> Short-lived access tokens + long-lived refresh tokens</li>
+                    <li><strong>User Claims:</strong> Role-based access (User vs Admin)</li>
+                </ul>
+            </section>
+
+            <!-- GLOSSARY SECTION -->
+            <section id="glossary">
+                <h2>11. Glossary</h2>
+
+                <table>
+                    <tr>
+                        <th>Term</th>
+                        <th>Definition</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Entity</strong></td>
+                        <td>An object with a unique identity that persists over time (User, Wallet, Bet)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Value Object</strong></td>
+                        <td>An object defined only by its values, no identity (Money, Odds)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Aggregate</strong></td>
+                        <td>A cluster of entities treated as a single unit (User + Wallet)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DTO</strong></td>
+                        <td>Data Transfer Object - simple object for API requests/responses</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Optimistic Locking</strong></td>
+                        <td>Concurrency control that assumes conflicts are rare, detects them when saving</td>
+                    </tr>
+                    <tr>
+                        <td><strong>xmin</strong></td>
+                        <td>PostgreSQL system column containing the transaction ID that created/modified a row</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parlay</strong></td>
+                        <td>A bet with multiple selections - all must win for the bet to pay out</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Push</strong></td>
+                        <td>Bet result that's a tie (e.g., point spread lands exactly on the line) - stake refunded</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Void</strong></td>
+                        <td>Bet or selection cancelled (e.g., event postponed) - stake refunded</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Line Lock</strong></td>
+                        <td>Feature that lets users lock in current odds for a fee, bet later at those odds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Decimal Odds</strong></td>
+                        <td>Odds format showing total return per $1 wagered (e.g., 2.5 = $2.50 back on $1 bet)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>American Odds</strong></td>
+                        <td>Odds format using +/- numbers (e.g., +200 = bet $100 to win $200)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Migration</strong></td>
+                        <td>A versioned database schema change tracked by EF Core</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DbContext</strong></td>
+                        <td>EF Core class representing a database session, provides DbSets for querying</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrency Token</strong></td>
+                        <td>A value that changes on every update, used to detect concurrent modifications</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- QUICK REFERENCE SECTION -->
+            <section id="reference">
+                <h2>12. Quick Reference</h2>
+
+                <h3>Common Commands</h3>
+
+                <pre><code># Run the API
+cd SportsBetting.API
+dotnet run
+
+# Run all tests
+cd SportsBetting.Data.Tests
+dotnet test
+
+# Create a new migration
+cd SportsBetting.Data
+dotnet ef migrations add MigrationName --startup-project ../SportsBetting.API
+
+# Apply migrations to database
+cd SportsBetting.API
+dotnet ef database update --project ../SportsBetting.Data
+
+# Build entire solution
+dotnet build
+
+# Restore NuGet packages
+dotnet restore</code></pre>
+
+                <h3>Project Structure</h3>
+
+                <pre><code>SportsBetting/
+├── SportsBetting.Domain/          # ← Business logic, NO dependencies
+│   ├── Entities/                  # User, Wallet, Bet, Transaction, etc.
+│   ├── ValueObjects/              # Money, Odds, Score
+│   ├── Services/                  # WalletService, SettlementService
+│   ├── Enums/                     # BetStatus, UserStatus, etc.
+│   └── Exceptions/                # Custom domain exceptions
+│
+├── SportsBetting.Data/            # ← Database layer, depends on Domain
+│   ├── Configurations/            # EF Core entity configurations
+│   ├── Migrations/                # Database migrations
+│   └── SportsBettingDbContext.cs
+│
+├── SportsBetting.API/             # ← HTTP endpoints, depends on Data + Domain
+│   ├── Controllers/               # WalletsController, BetsController
+│   └── DTOs/                      # Request/Response objects
+│
+├── SportsBetting.Services/        # ← Application services (future use)
+│
+└── SportsBetting.Data.Tests/      # ← Integration tests
+    ├── ConcurrencyTests.cs
+    ├── DatabaseConstraintTests.cs
+    ├── RetryExhaustionTests.cs
+    └── PerformanceBenchmarkTests.cs</code></pre>
+
+                <h3>Important Files</h3>
+
+                <table>
+                    <tr>
+                        <th>File</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td><code>Domain/Entities/Wallet.cs</code></td>
+                        <td>Core wallet logic with balance management</td>
+                    </tr>
+                    <tr>
+                        <td><code>Domain/ValueObjects/Money.cs</code></td>
+                        <td>Type-safe money representation</td>
+                    </tr>
+                    <tr>
+                        <td><code>Data/Configurations/WalletConfiguration.cs</code></td>
+                        <td>Wallet database mapping with xmin concurrency</td>
+                    </tr>
+                    <tr>
+                        <td><code>API/Controllers/WalletsController.cs</code></td>
+                        <td>Wallet HTTP endpoints with retry logic</td>
+                    </tr>
+                    <tr>
+                        <td><code>Data/SportsBettingDbContext.cs</code></td>
+                        <td>Main database context</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- CONCLUSION SECTION -->
+            <section id="conclusion">
+                <h2>13. Conclusion</h2>
+
+                <p>This sports betting platform demonstrates production-grade architecture and implementation. Key takeaways:</p>
+
+                <div class="box box-success">
+                    <h4>Architectural Strengths</h4>
+                    <ul>
+                        <li><strong>Domain-Driven Design:</strong> Business logic isolated from infrastructure</li>
+                        <li><strong>Type Safety:</strong> Money and Odds value objects prevent calculation errors</li>
+                        <li><strong>Concurrency Control:</strong> PostgreSQL xmin prevents race conditions</li>
+                        <li><strong>Audit Trail:</strong> Every wallet operation logged in Transactions table</li>
+                        <li><strong>Database Constraints:</strong> Defense-in-depth data validation</li>
+                        <li><strong>Comprehensive Testing:</strong> 45 integration tests verify correctness</li>
+                    </ul>
+                </div>
+
+                <div class="box box-info">
+                    <h4>Learning Resources</h4>
+                    <p>To deepen your understanding:</p>
+                    <ul>
+                        <li><strong>Domain-Driven Design:</strong> "Domain-Driven Design" by Eric Evans</li>
+                        <li><strong>EF Core:</strong> Microsoft's official documentation</li>
+                        <li><strong>Concurrency:</strong> PostgreSQL documentation on MVCC and xmin</li>
+                        <li><strong>Clean Architecture:</strong> "Clean Architecture" by Robert C. Martin</li>
+                    </ul>
+                </div>
+
+                <p>As you work on this codebase, remember the guiding principles:</p>
+                <ol>
+                    <li><strong>Business logic belongs in the domain layer</strong> - not in controllers or database procedures</li>
+                    <li><strong>Never trust user input</strong> - validate everything, use database constraints as last line of defense</li>
+                    <li><strong>Concurrency matters</strong> - always consider what happens when two operations happen simultaneously</li>
+                    <li><strong>Test what matters</strong> - integration tests that verify the entire stack are more valuable than isolated unit tests</li>
+                    <li><strong>Make invalid states unrepresentable</strong> - use the type system and validation to prevent bugs at compile time</li>
+                </ol>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>SportsBetting Platform Architecture Guide</strong></p>
+            <p>Version 1.0 | Last Updated: November 2025</p>
+            <p style="margin-top: 15px; opacity: 0.8;">Built with ASP.NET Core 9, EF Core 9, and PostgreSQL</p>
+        </footer>
+    </div>
+</body>
+</html>

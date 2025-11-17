@@ -17,6 +17,16 @@ public record WalletResponse(
 );
 
 /// <summary>
+/// Request DTO for creating a wallet
+/// </summary>
+public record CreateWalletRequest(
+    Guid? UserId,
+    decimal? InitialBalance,
+    string? Currency,
+    string? Description
+);
+
+/// <summary>
 /// Request DTO for depositing funds
 /// </summary>
 public record DepositRequest(

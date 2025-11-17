@@ -56,6 +56,22 @@ public class Bet
     /// </summary>
     public bool WasLineLocked => LineLockId.HasValue;
 
+    // Hybrid System Support
+    /// <summary>
+    /// Bet mode: Sportsbook (traditional) or Exchange (P2P)
+    /// </summary>
+    public BetMode BetMode { get; private set; } = BetMode.Sportsbook;
+
+    /// <summary>
+    /// Current state of the bet (includes exchange states like Unmatched, Matched, etc.)
+    /// </summary>
+    public BetState State { get; private set; } = BetState.Pending;
+
+    /// <summary>
+    /// For exchange bets: the odds proposed by the user. For sportsbook bets: null
+    /// </summary>
+    public decimal? ProposedOdds { get; private set; }
+
     // Private parameterless constructor for EF Core
     private Bet()
     {
@@ -169,6 +185,35 @@ public class Bet
 
         var selection = new BetSelection(evt, market, outcome, lockedOdds);
         return new Bet(user, BetType.Single, stake, new List<BetSelection> { selection }, lineLock.Id);
+    }
+
+    /// <summary>
+    /// Create a single exchange bet for P2P betting
+    /// </summary>
+    public static Bet CreateExchangeSingle(
+        User user,
+        Money stake,
+        Event evt,
+        Market market,
+        Outcome outcome,
+        decimal proposedOdds,
+        BetSide side)
+    {
+        if (market.Mode == MarketMode.Sportsbook)
+            throw new InvalidOperationException("Cannot create exchange bet on sportsbook-only market");
+
+        if (proposedOdds < 1.0m)
+            throw new ArgumentException("Odds must be at least 1.0", nameof(proposedOdds));
+
+        var selection = new BetSelection(evt, market, outcome, new Odds(proposedOdds));
+        var bet = new Bet(user, BetType.Single, stake, new List<BetSelection> { selection });
+
+        // Set exchange-specific properties
+        bet.BetMode = BetMode.Exchange;
+        bet.State = BetState.Unmatched;
+        bet.ProposedOdds = proposedOdds;
+
+        return bet;
     }
 
     /// <summary>
@@ -320,6 +365,23 @@ public class Bet
         {
             selection.MarkAsVoid();
         }
+    }
+
+    /// <summary>
+    /// Set bet status (for exchange bet settlement)
+    /// </summary>
+    public void SetStatus(BetStatus status)
+    {
+        Status = status;
+    }
+
+    /// <summary>
+    /// Set actual payout (for exchange bet settlement)
+    /// </summary>
+    public void SetActualPayout(Money payout)
+    {
+        ActualPayout = payout;
+        SettledAt = DateTime.UtcNow;
     }
 
     private Odds CalculateCombinedOdds()

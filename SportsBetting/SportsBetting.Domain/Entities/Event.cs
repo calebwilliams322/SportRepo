@@ -26,6 +26,17 @@ public class Event
     /// </summary>
     public Score? FinalScore { get; private set; }
 
+    /// <summary>
+    /// External ID from The Odds API (e.g., "abc123def456")
+    /// Used to sync and update events from external source
+    /// </summary>
+    public string? ExternalId { get; private set; }
+
+    /// <summary>
+    /// Timestamp of last sync with The Odds API
+    /// </summary>
+    public DateTime? LastSyncedAt { get; private set; }
+
     private readonly List<Market> _markets;
     public IReadOnlyList<Market> Markets => _markets.AsReadOnly();
 
@@ -173,6 +184,26 @@ public class Event
         Status = EventStatus.InProgress;
 
         // Markets can be individually reopened as needed
+    }
+
+    /// <summary>
+    /// Set external ID and sync timestamp (called by Odds API Listener)
+    /// </summary>
+    public void SetExternalId(string externalId)
+    {
+        if (string.IsNullOrWhiteSpace(externalId))
+            throw new ArgumentException("External ID cannot be empty", nameof(externalId));
+
+        ExternalId = externalId;
+        LastSyncedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Update sync timestamp (called after each sync from Odds API)
+    /// </summary>
+    public void UpdateSyncTimestamp()
+    {
+        LastSyncedAt = DateTime.UtcNow;
     }
 
     /// <summary>

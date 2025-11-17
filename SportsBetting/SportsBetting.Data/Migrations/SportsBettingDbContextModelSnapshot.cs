@@ -39,14 +39,23 @@ namespace SportsBetting.Data.Migrations
                         .HasColumnType("character(3)")
                         .IsFixedLength();
 
+                    b.Property<int>("BetMode")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("LineLockId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("PlacedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal?>("ProposedOdds")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime?>("SettledAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -135,6 +144,60 @@ namespace SportsBetting.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SportsBetting.Domain.Entities.BetMatch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("BackBetCommission")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("BackBetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsSettled")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("LayBetCommission")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("LayBetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MakerBetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("MatchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("MatchedOdds")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MatchedStake")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("SettledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TakerBetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("WinnerBetId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BackBetId");
+
+                    b.HasIndex("IsSettled")
+                        .HasFilter("\"IsSettled\" = false");
+
+                    b.HasIndex("LayBetId");
+
+                    b.ToTable("BetMatches");
+                });
+
             modelBuilder.Entity("SportsBetting.Domain.Entities.BetSelection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -213,6 +276,45 @@ namespace SportsBetting.Data.Migrations
                     b.ToTable("BetSelections", (string)null);
                 });
 
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ConsensusOdds", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AverageOdds")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FetchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("MaxOdds")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MinOdds")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("OutcomeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SampleSize")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutcomeId", "ExpiresAt");
+
+                    b.ToTable("ConsensusOdds");
+                });
+
             modelBuilder.Entity("SportsBetting.Domain.Entities.Event", b =>
                 {
                     b.Property<Guid>("Id")
@@ -222,6 +324,10 @@ namespace SportsBetting.Data.Migrations
                     b.Property<Guid>("AwayTeamId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<string>("FinalScore")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
@@ -229,6 +335,9 @@ namespace SportsBetting.Data.Migrations
 
                     b.Property<Guid>("HomeTeamId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastSyncedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("LeagueId")
                         .HasColumnType("uuid");
@@ -254,8 +363,14 @@ namespace SportsBetting.Data.Migrations
                     b.HasIndex("AwayTeamId")
                         .HasDatabaseName("IX_Events_AwayTeamId");
 
+                    b.HasIndex("ExternalId")
+                        .HasDatabaseName("IX_Events_ExternalId");
+
                     b.HasIndex("HomeTeamId")
                         .HasDatabaseName("IX_Events_HomeTeamId");
+
+                    b.HasIndex("LastSyncedAt")
+                        .HasDatabaseName("IX_Events_LastSyncedAt");
 
                     b.HasIndex("LeagueId")
                         .HasDatabaseName("IX_Events_LeagueId");
@@ -270,6 +385,163 @@ namespace SportsBetting.Data.Migrations
                         .HasDatabaseName("IX_Events_LeagueId_ScheduledStartTime");
 
                     b.ToTable("Events", (string)null);
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ExchangeBet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("MatchedStake")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ProposedOdds")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Side")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal>("TotalStake")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnmatchedStake")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BetId")
+                        .IsUnique();
+
+                    b.HasIndex("State")
+                        .HasFilter("\"State\" IN ('Unmatched', 'PartiallyMatched')");
+
+                    b.ToTable("ExchangeBets");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ExternalEventMapping", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("LastVerifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId")
+                        .HasDatabaseName("IX_ExternalEventMappings_EventId");
+
+                    b.HasIndex("Provider")
+                        .HasDatabaseName("IX_ExternalEventMappings_Provider");
+
+                    b.HasIndex("ExternalId", "Provider")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ExternalEventMappings_ExternalId_Provider");
+
+                    b.ToTable("ExternalEventMappings", (string)null);
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.HouseRevenue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("EffectiveMargin")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeCommissionRevenue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ExchangeCustomerPayouts")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ExchangeMatchesSettled")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ExchangeVolume")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PeriodType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("SportsbookBetsSettled")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("SportsbookGrossRevenue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SportsbookNetRevenue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SportsbookPayouts")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SportsbookVolume")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalRevenue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalVolume")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PeriodStart");
+
+                    b.HasIndex("PeriodStart", "PeriodEnd", "PeriodType")
+                        .IsUnique();
+
+                    b.ToTable("HouseRevenue");
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.League", b =>
@@ -451,11 +723,21 @@ namespace SportsBetting.Data.Migrations
                     b.Property<Guid?>("EventId1")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal?>("ExchangeCommissionRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("IsOpen")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsSettled")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("Mode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -473,6 +755,9 @@ namespace SportsBetting.Data.Migrations
 
                     b.HasIndex("EventId1");
 
+                    b.HasIndex("ExternalId")
+                        .HasDatabaseName("IX_Markets_ExternalId");
+
                     b.HasIndex("IsOpen")
                         .HasDatabaseName("IX_Markets_IsOpen");
 
@@ -483,6 +768,48 @@ namespace SportsBetting.Data.Migrations
                         .HasDatabaseName("IX_Markets_EventId_Type");
 
                     b.ToTable("Markets", (string)null);
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.OddsHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OutcomeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RawBookmakerData")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.ComplexProperty<Dictionary<string, object>>("Odds", "SportsBetting.Domain.Entities.OddsHistory.Odds#Odds", b1 =>
+                        {
+                            b1.Property<decimal>("DecimalValue")
+                                .HasPrecision(10, 4)
+                                .HasColumnType("numeric(10,4)")
+                                .HasColumnName("Odds");
+                        });
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OutcomeId")
+                        .HasDatabaseName("IX_OddsHistory_OutcomeId");
+
+                    b.HasIndex("Timestamp")
+                        .HasDatabaseName("IX_OddsHistory_Timestamp");
+
+                    b.HasIndex("OutcomeId", "Timestamp")
+                        .HasDatabaseName("IX_OddsHistory_OutcomeId_Timestamp");
+
+                    b.ToTable("OddsHistory", (string)null);
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.Outcome", b =>
@@ -496,11 +823,18 @@ namespace SportsBetting.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("IsVoid")
                         .HasColumnType("boolean");
 
                     b.Property<bool?>("IsWinner")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastOddsUpdate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal?>("Line")
                         .HasPrecision(10, 2)
@@ -527,11 +861,17 @@ namespace SportsBetting.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExternalId")
+                        .HasDatabaseName("IX_Outcomes_ExternalId");
+
                     b.HasIndex("IsVoid")
                         .HasDatabaseName("IX_Outcomes_IsVoid");
 
                     b.HasIndex("IsWinner")
                         .HasDatabaseName("IX_Outcomes_IsWinner");
+
+                    b.HasIndex("LastOddsUpdate")
+                        .HasDatabaseName("IX_Outcomes_LastOddsUpdate");
 
                     b.HasIndex("MarketId")
                         .HasDatabaseName("IX_Outcomes_MarketId");
@@ -539,6 +879,47 @@ namespace SportsBetting.Data.Migrations
                     b.HasIndex("MarketId1");
 
                     b.ToTable("Outcomes", (string)null);
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("IX_RefreshTokens_ExpiresAt");
+
+                    b.HasIndex("Token")
+                        .IsUnique()
+                        .HasDatabaseName("IX_RefreshTokens_Token");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_RefreshTokens_UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.Sport", b =>
@@ -724,6 +1105,15 @@ namespace SportsBetting.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CommissionTier")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Standard");
+
+                    b.Property<DateTime?>("CommissionTierLastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -738,6 +1128,15 @@ namespace SportsBetting.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("EmailVerificationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EmailVerificationTokenExpires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -745,6 +1144,15 @@ namespace SportsBetting.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -769,6 +1177,102 @@ namespace SportsBetting.Data.Migrations
                         .HasDatabaseName("IX_Users_Username");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.UserStatistics", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Bets30Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Bets7Day")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Commission30Day")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("LargestLoss")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("LargestWin")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("LastBetPlaced")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastBetSettled")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MakerTradesAllTime")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("MakerVolumeAllTime")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("Matches30Day")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("NetProfitAllTime")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("TakerTradesAllTime")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TakerVolumeAllTime")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("TotalBetsAllTime")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalCommissionPaidAllTime")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("TotalMatchesAllTime")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalVolumeAllTime")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Volume30Day")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("Volume7Day")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastUpdated")
+                        .HasDatabaseName("IX_UserStatistics_LastUpdated");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserStatistics_UserId");
+
+                    b.HasIndex("Volume30Day")
+                        .HasDatabaseName("IX_UserStatistics_Volume30Day");
+
+                    b.ToTable("UserStatistics", (string)null);
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.Wallet", b =>
@@ -901,6 +1405,25 @@ namespace SportsBetting.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SportsBetting.Domain.Entities.BetMatch", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.ExchangeBet", "BackBet")
+                        .WithMany("MatchesAsBack")
+                        .HasForeignKey("BackBetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SportsBetting.Domain.Entities.ExchangeBet", "LayBet")
+                        .WithMany("MatchesAsLay")
+                        .HasForeignKey("LayBetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BackBet");
+
+                    b.Navigation("LayBet");
+                });
+
             modelBuilder.Entity("SportsBetting.Domain.Entities.BetSelection", b =>
                 {
                     b.HasOne("SportsBetting.Domain.Entities.Bet", null)
@@ -912,6 +1435,17 @@ namespace SportsBetting.Data.Migrations
                     b.HasOne("SportsBetting.Domain.Entities.Bet", null)
                         .WithMany("Selections")
                         .HasForeignKey("BetId1");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ConsensusOdds", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.Outcome", "Outcome")
+                        .WithMany()
+                        .HasForeignKey("OutcomeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Outcome");
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.Event", b =>
@@ -931,6 +1465,28 @@ namespace SportsBetting.Data.Migrations
                     b.Navigation("AwayTeam");
 
                     b.Navigation("HomeTeam");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ExchangeBet", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.Bet", "Bet")
+                        .WithOne()
+                        .HasForeignKey("SportsBetting.Domain.Entities.ExchangeBet", "BetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bet");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ExternalEventMapping", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.League", b =>
@@ -970,6 +1526,17 @@ namespace SportsBetting.Data.Migrations
                         .HasForeignKey("EventId1");
                 });
 
+            modelBuilder.Entity("SportsBetting.Domain.Entities.OddsHistory", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.Outcome", "Outcome")
+                        .WithMany()
+                        .HasForeignKey("OutcomeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Outcome");
+                });
+
             modelBuilder.Entity("SportsBetting.Domain.Entities.Outcome", b =>
                 {
                     b.HasOne("SportsBetting.Domain.Entities.Market", null)
@@ -981,6 +1548,17 @@ namespace SportsBetting.Data.Migrations
                     b.HasOne("SportsBetting.Domain.Entities.Market", null)
                         .WithMany("Outcomes")
                         .HasForeignKey("MarketId1");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.Team", b =>
@@ -1001,6 +1579,17 @@ namespace SportsBetting.Data.Migrations
                     b.HasOne("SportsBetting.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SportsBetting.Domain.Entities.UserStatistics", b =>
+                {
+                    b.HasOne("SportsBetting.Domain.Entities.User", "User")
+                        .WithOne("Statistics")
+                        .HasForeignKey("SportsBetting.Domain.Entities.UserStatistics", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1028,6 +1617,13 @@ namespace SportsBetting.Data.Migrations
                     b.Navigation("Markets");
                 });
 
+            modelBuilder.Entity("SportsBetting.Domain.Entities.ExchangeBet", b =>
+                {
+                    b.Navigation("MatchesAsBack");
+
+                    b.Navigation("MatchesAsLay");
+                });
+
             modelBuilder.Entity("SportsBetting.Domain.Entities.League", b =>
                 {
                     b.Navigation("Teams");
@@ -1045,6 +1641,8 @@ namespace SportsBetting.Data.Migrations
 
             modelBuilder.Entity("SportsBetting.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Statistics");
+
                     b.Navigation("Wallet");
                 });
 #pragma warning restore 612, 618

@@ -34,6 +34,17 @@ public class Outcome
     /// </summary>
     public bool IsVoid { get; private set; }
 
+    /// <summary>
+    /// External ID from The Odds API outcome name
+    /// (e.g., "Kansas City Chiefs", "Over 45.5")
+    /// </summary>
+    public string? ExternalId { get; private set; }
+
+    /// <summary>
+    /// Timestamp of last odds update from The Odds API
+    /// </summary>
+    public DateTime? LastOddsUpdate { get; private set; }
+
     // Private parameterless constructor for EF Core
     private Outcome()
     {
@@ -129,6 +140,26 @@ public class Outcome
 
         IsWinner = null;
         IsVoid = false;
+    }
+
+    /// <summary>
+    /// Set external ID for API-created outcomes (called by Odds API Listener)
+    /// </summary>
+    public void SetExternalId(string externalId)
+    {
+        if (string.IsNullOrWhiteSpace(externalId))
+            throw new ArgumentException("External ID cannot be empty", nameof(externalId));
+
+        ExternalId = externalId;
+    }
+
+    /// <summary>
+    /// Update odds from The Odds API with timestamp tracking
+    /// </summary>
+    public void UpdateOddsFromApi(Odds newOdds)
+    {
+        CurrentOdds = newOdds;
+        LastOddsUpdate = DateTime.UtcNow;
     }
 
     public override string ToString()

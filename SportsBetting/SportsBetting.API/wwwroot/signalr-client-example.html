@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalR Order Book Client Example</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            font-size: 1.3em;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .disconnect-btn {
+            background-color: #f44336;
+        }
+        .disconnect-btn:hover {
+            background-color: #da190b;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .order-book {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .side {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .side.back {
+            background-color: #e3f2fd;
+        }
+        .side.lay {
+            background-color: #fce4ec;
+        }
+        .side h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .order {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 3px solid #4CAF50;
+        }
+        .side.lay .order {
+            border-left-color: #f44336;
+        }
+        .messages {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .message {
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 3px;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .consensus {
+            background-color: #fff9c4;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>SignalR Order Book Client - Live Demo</h1>
+
+    <div class="container">
+        <h2>Connection Settings</h2>
+        <div class="controls">
+            <input type="text" id="hubUrl" value="http://localhost:5192/hubs/orderbook" placeholder="Hub URL" style="flex: 1;">
+            <input type="text" id="jwtToken" placeholder="JWT Token (optional for auth)" style="flex: 1;">
+            <button id="connectBtn" onclick="connect()">Connect</button>
+            <button id="disconnectBtn" class="disconnect-btn" onclick="disconnect()" disabled>Disconnect</button>
+        </div>
+        <div id="status" class="status disconnected">Disconnected</div>
+    </div>
+
+    <div class="container">
+        <h2>Subscriptions</h2>
+        <div class="controls">
+            <input type="text" id="outcomeId" placeholder="Outcome ID (GUID)" style="flex: 1;">
+            <button onclick="subscribeToOutcome()">Subscribe to Outcome</button>
+            <button onclick="unsubscribeFromOutcome()">Unsubscribe</button>
+        </div>
+        <div class="controls">
+            <input type="text" id="marketId" placeholder="Market ID (GUID)" style="flex: 1;">
+            <button onclick="subscribeToMarket()">Subscribe to Market</button>
+        </div>
+        <div class="controls">
+            <button onclick="subscribeToUserNotifications()">Subscribe to My Notifications</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Live Order Book</h2>
+        <div class="consensus" id="consensus">
+            Waiting for data...
+        </div>
+        <div class="order-book">
+            <div class="side back">
+                <h3>Back Orders (Buyers)</h3>
+                <div id="backOrders">No orders</div>
+            </div>
+            <div class="side lay">
+                <h3>Lay Orders (Sellers)</h3>
+                <div id="layOrders">No orders</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Real-time Messages</h2>
+        <div class="messages" id="messages"></div>
+    </div>
+
+    <div class="container">
+        <h2>Usage Instructions</h2>
+        <ol>
+            <li>Make sure your API is running at <code>http://localhost:5192</code></li>
+            <li>Click <strong>Connect</strong> to establish WebSocket connection</li>
+            <li>Enter an Outcome ID (GUID) and click <strong>Subscribe to Outcome</strong></li>
+            <li>Open another browser tab/window and place bets via API to see live updates</li>
+            <li>Watch the order book update in real-time as bets are placed, matched, or cancelled</li>
+        </ol>
+        <p><strong>Example curl command to place a bet:</strong></p>
+        <pre><code>curl -X POST http://localhost:5192/api/bets/exchange \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "outcomeId": "YOUR_OUTCOME_ID",
+    "stake": 100,
+    "odds": 2.5,
+    "side": "Back"
+  }'</code></pre>
+    </div>
+
+    <!-- Include SignalR client library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+
+    <script>
+        let connection = null;
+        let currentOutcomeId = null;
+
+        function addMessage(message, type = 'info') {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function connect() {
+            const hubUrl = document.getElementById('hubUrl').value;
+            const jwtToken = document.getElementById('jwtToken').value;
+
+            // Build connection URL with optional JWT token
+            let url = hubUrl;
+            if (jwtToken) {
+                url += `?access_token=${encodeURIComponent(jwtToken)}`;
+            }
+
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl(url)
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            // Register event handlers
+            connection.on("OrderBookUpdate", (message) => {
+                addMessage(`Order book updated for outcome ${message.outcomeId}`, 'info');
+                updateOrderBook(message);
+            });
+
+            connection.on("BetMatched", (message) => {
+                addMessage(`Bet matched! Amount: $${message.matchedAmount}, Odds: ${message.matchedOdds}`, 'success');
+                console.log("BetMatched:", message);
+            });
+
+            connection.on("NewOrder", (message) => {
+                addMessage(`New ${message.side} order: $${message.stake} @ ${message.odds}`, 'info');
+            });
+
+            connection.on("OrderCancelled", (message) => {
+                addMessage(`Order cancelled: ${message.side} $${message.cancelledStake}`, 'warning');
+            });
+
+            connection.on("OddsUpdate", (message) => {
+                addMessage(`Odds updated for ${message.outcomeName}: Back ${message.backOdds}, Lay ${message.layOdds}`, 'info');
+            });
+
+            connection.on("MarketStatus", (message) => {
+                addMessage(`Market ${message.marketName} status: ${message.status}`, 'warning');
+            });
+
+            connection.on("EventUpdate", (message) => {
+                addMessage(`Event ${message.eventName}: ${message.message}`, 'info');
+            });
+
+            connection.onreconnecting(() => {
+                updateStatus('Reconnecting...', false);
+                addMessage('Connection lost. Reconnecting...', 'warning');
+            });
+
+            connection.onreconnected(() => {
+                updateStatus('Connected', true);
+                addMessage('Reconnected successfully!', 'success');
+            });
+
+            connection.onclose(() => {
+                updateStatus('Disconnected', false);
+                addMessage('Connection closed.', 'error');
+            });
+
+            try {
+                await connection.start();
+                updateStatus('Connected', true);
+                addMessage('Connected to SignalR hub!', 'success');
+            } catch (err) {
+                updateStatus('Connection failed', false);
+                addMessage(`Connection failed: ${err}`, 'error');
+                console.error(err);
+            }
+        }
+
+        async function disconnect() {
+            if (connection) {
+                await connection.stop();
+                updateStatus('Disconnected', false);
+                addMessage('Disconnected from hub.', 'info');
+            }
+        }
+
+        function updateStatus(text, isConnected) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = text;
+            statusDiv.className = `status ${isConnected ? 'connected' : 'disconnected'}`;
+
+            document.getElementById('connectBtn').disabled = isConnected;
+            document.getElementById('disconnectBtn').disabled = !isConnected;
+        }
+
+        async function subscribeToOutcome() {
+            if (!connection) {
+                addMessage('Not connected. Please connect first.', 'error');
+                return;
+            }
+
+            const outcomeId = document.getElementById('outcomeId').value;
+            if (!outcomeId) {
+                addMessage('Please enter an outcome ID', 'error');
+                return;
+            }
+
+            try {
+                await connection.invoke("SubscribeToOutcome", outcomeId);
+                currentOutcomeId = outcomeId;
+                addMessage(`Subscribed to outcome: ${outcomeId}`, 'success');
+            } catch (err) {
+                addMessage(`Subscription failed: ${err}`, 'error');
+                console.error(err);
+            }
+        }
+
+        async function unsubscribeFromOutcome() {
+            if (!connection || !currentOutcomeId) return;
+
+            try {
+                await connection.invoke("UnsubscribeFromOutcome", currentOutcomeId);
+                addMessage(`Unsubscribed from outcome: ${currentOutcomeId}`, 'info');
+                currentOutcomeId = null;
+            } catch (err) {
+                addMessage(`Unsubscribe failed: ${err}`, 'error');
+            }
+        }
+
+        async function subscribeToMarket() {
+            if (!connection) {
+                addMessage('Not connected. Please connect first.', 'error');
+                return;
+            }
+
+            const marketId = document.getElementById('marketId').value;
+            if (!marketId) {
+                addMessage('Please enter a market ID', 'error');
+                return;
+            }
+
+            try {
+                await connection.invoke("SubscribeToMarket", marketId);
+                addMessage(`Subscribed to market: ${marketId}`, 'success');
+            } catch (err) {
+                addMessage(`Subscription failed: ${err}`, 'error');
+            }
+        }
+
+        async function subscribeToUserNotifications() {
+            if (!connection) {
+                addMessage('Not connected. Please connect first.', 'error');
+                return;
+            }
+
+            try {
+                await connection.invoke("SubscribeToUserNotifications");
+                addMessage('Subscribed to user notifications', 'success');
+            } catch (err) {
+                addMessage(`Subscription failed: ${err}`, 'error');
+            }
+        }
+
+        function updateOrderBook(message) {
+            // Update consensus odds
+            const consensusDiv = document.getElementById('consensus');
+            if (message.consensusBackOdds || message.consensusLayOdds) {
+                consensusDiv.innerHTML = `
+                    <strong>Best Odds:</strong>
+                    Back: ${message.consensusBackOdds ? message.consensusBackOdds.toFixed(2) : 'N/A'} |
+                    Lay: ${message.consensusLayOdds ? message.consensusLayOdds.toFixed(2) : 'N/A'}
+                `;
+            }
+
+            // Update back orders
+            const backOrdersDiv = document.getElementById('backOrders');
+            if (message.backOrders && message.backOrders.length > 0) {
+                backOrdersDiv.innerHTML = message.backOrders.map(order => `
+                    <div class="order">
+                        <span><strong>Odds:</strong> ${order.odds}</span>
+                        <span><strong>Stake:</strong> $${order.stake}</span>
+                    </div>
+                `).join('');
+            } else {
+                backOrdersDiv.innerHTML = '<p>No back orders</p>';
+            }
+
+            // Update lay orders
+            const layOrdersDiv = document.getElementById('layOrders');
+            if (message.layOrders && message.layOrders.length > 0) {
+                layOrdersDiv.innerHTML = message.layOrders.map(order => `
+                    <div class="order">
+                        <span><strong>Odds:</strong> ${order.odds}</span>
+                        <span><strong>Stake:</strong> $${order.stake}</span>
+                    </div>
+                `).join('');
+            } else {
+                layOrdersDiv.innerHTML = '<p>No lay orders</p>';
+            }
+        }
+
+        // Keep connection alive
+        setInterval(async () => {
+            if (connection && connection.state === signalR.HubConnectionState.Connected) {
+                try {
+                    await connection.invoke("Ping");
+                } catch (err) {
+                    console.error("Ping failed:", err);
+                }
+            }
+        }, 30000); // Ping every 30 seconds
+    </script>
+</body>
+</html>

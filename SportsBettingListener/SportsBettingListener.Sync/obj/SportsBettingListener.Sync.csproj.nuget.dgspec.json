@@ -1,0 +1,388 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.Sync/SportsBettingListener.Sync.csproj": {}
+  },
+  "projects": {
+    "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj",
+        "projectName": "SportsBetting.Data",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj",
+        "packagesPath": "/Users/calebwilliams/.nuget/packages/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+                "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
+        "projectName": "SportsBetting.Domain",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj",
+        "packagesPath": "/Users/calebwilliams/.nuget/packages/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj",
+        "projectName": "SportsBettingListener.OddsApi",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj",
+        "packagesPath": "/Users/calebwilliams/.nuget/packages/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[8.8.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/SportsBettingListener.ScoreApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/SportsBettingListener.ScoreApi.csproj",
+        "projectName": "SportsBettingListener.ScoreApi",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/SportsBettingListener.ScoreApi.csproj",
+        "packagesPath": "/Users/calebwilliams/.nuget/packages/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.Sync/SportsBettingListener.Sync.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.Sync/SportsBettingListener.Sync.csproj",
+        "projectName": "SportsBettingListener.Sync",
+        "projectPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.Sync/SportsBettingListener.Sync.csproj",
+        "packagesPath": "/Users/calebwilliams/.nuget/packages/",
+        "outputPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.Sync/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj": {
+                "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj"
+              },
+              "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+                "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
+              },
+              "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj": {
+                "projectPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj"
+              },
+              "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/SportsBettingListener.ScoreApi.csproj": {
+                "projectPath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.ScoreApi/SportsBettingListener.ScoreApi.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.306/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

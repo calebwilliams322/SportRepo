@@ -47,6 +47,19 @@
           }
         }
       },
+      "BCrypt.Net-Next/4.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
         "type": "package",
         "compile": {
@@ -1252,6 +1265,9 @@
       "SportsBetting.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "BCrypt.Net-Next": "4.0.3"
+        },
         "compile": {
           "bin/placeholder/SportsBetting.Domain.dll": {}
         },
@@ -1298,6 +1314,37 @@
         "azureicon.png",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "BCrypt.Net-Next/4.0.3": {
+      "sha512": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
+      "type": "package",
+      "path": "bcrypt.net-next/4.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bcrypt.net-next.4.0.3.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt.Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/net5.0/BCrypt.Net-Next.dll",
+        "lib/net5.0/BCrypt.Net-Next.xml",
+        "lib/net6.0/BCrypt.Net-Next.dll",
+        "lib/net6.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt.Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
@@ -3232,11 +3279,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/calebwilliams/SportsBetting/SportsBetting.Console/SportsBetting.Console.csproj",
+      "projectUniqueName": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Console/SportsBetting.Console.csproj",
       "projectName": "SportsBetting.Console",
-      "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Console/SportsBetting.Console.csproj",
+      "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Console/SportsBetting.Console.csproj",
       "packagesPath": "/Users/calebwilliams/.nuget/packages/",
-      "outputPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Console/obj/",
+      "outputPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Console/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/calebwilliams/.nuget/NuGet/NuGet.Config"
@@ -3251,11 +3298,11 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/Users/calebwilliams/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj": {
-              "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj"
+            "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj": {
+              "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Data/SportsBetting.Data.csproj"
             },
-            "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
-              "projectPath": "/Users/calebwilliams/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
+            "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj": {
+              "projectPath": "/Users/calebwilliams/SportRepo/SportsBetting/SportsBetting.Domain/SportsBetting.Domain.csproj"
             }
           }
         }

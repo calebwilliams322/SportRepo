@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "vEmP6fdKzOA=",
+  "success": true,
+  "projectFilePath": "/Users/calebwilliams/SportRepo/SportsBettingListener/SportsBettingListener.OddsApi/SportsBettingListener.OddsApi.csproj",
+  "expectedPackageFiles": [
+    "/Users/calebwilliams/.nuget/packages/castle.core/5.1.1/castle.core.5.1.1.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/fluentassertions/8.8.0/fluentassertions.8.8.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.dependencyinjection/10.0.0/microsoft.extensions.dependencyinjection.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.diagnostics/10.0.0/microsoft.extensions.diagnostics.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.diagnostics.abstractions/10.0.0/microsoft.extensions.diagnostics.abstractions.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.http/10.0.0/microsoft.extensions.http.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.logging/10.0.0/microsoft.extensions.logging.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.options/10.0.0/microsoft.extensions.options.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.options.configurationextensions/10.0.0/microsoft.extensions.options.configurationextensions.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/microsoft.extensions.primitives/10.0.0/microsoft.extensions.primitives.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/moq/4.20.72/moq.4.20.72.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/system.diagnostics.diagnosticsource/10.0.0/system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/system.diagnostics.eventlog/6.0.0/system.diagnostics.eventlog.6.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/system.io.pipelines/10.0.0/system.io.pipelines.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/system.text.encodings.web/10.0.0/system.text.encodings.web.10.0.0.nupkg.sha512",
+    "/Users/calebwilliams/.nuget/packages/system.text.json/10.0.0/system.text.json.10.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

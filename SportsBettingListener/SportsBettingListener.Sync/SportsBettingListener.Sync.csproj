@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SportsBettingListener.OddsApi\SportsBettingListener.OddsApi.csproj" />
+    <ProjectReference Include="..\..\SportsBetting\SportsBetting.Domain\SportsBetting.Domain.csproj" />
+    <ProjectReference Include="..\..\SportsBetting\SportsBetting.Data\SportsBetting.Data.csproj" />
+    <ProjectReference Include="..\SportsBettingListener.ScoreApi\SportsBettingListener.ScoreApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

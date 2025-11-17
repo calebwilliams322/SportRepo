@@ -34,6 +34,11 @@ public class MarketConfiguration : IEntityTypeConfiguration<Market>
         builder.Property(m => m.IsSettled)
             .IsRequired();
 
+        // Odds API integration property
+        builder.Property(m => m.ExternalId)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
         // Indexes
         builder.HasIndex(m => m.EventId)
             .HasDatabaseName("IX_Markets_EventId");
@@ -46,6 +51,10 @@ public class MarketConfiguration : IEntityTypeConfiguration<Market>
 
         builder.HasIndex(m => new { m.EventId, m.Type })
             .HasDatabaseName("IX_Markets_EventId_Type");
+
+        // Odds API index
+        builder.HasIndex(m => m.ExternalId)
+            .HasDatabaseName("IX_Markets_ExternalId");
 
         // Relationships
         builder.HasMany<Outcome>()
